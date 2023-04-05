@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.BlogContentMapper">
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.BlogContent">
+        <!--@mbg.generated-->
+        <!--@Table blog_content-->
+        <id column="cid" jdbcType="BIGINT" property="cid"/>
+        <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="slug" jdbcType="VARCHAR" property="slug"/>
+        <result column="created" jdbcType="BIGINT" property="created"/>
+        <result column="modified" jdbcType="BIGINT" property="modified"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="tags" jdbcType="VARCHAR" property="tags"/>
+        <result column="categories" jdbcType="VARCHAR" property="categories"/>
+        <result column="hits" jdbcType="INTEGER" property="hits"/>
+        <result column="comments_num" jdbcType="INTEGER" property="commentsNum"/>
+        <result column="allow_comment" jdbcType="INTEGER" property="allowComment"/>
+        <result column="allow_ping" jdbcType="INTEGER" property="allowPing"/>
+        <result column="allow_feed" jdbcType="INTEGER" property="allowFeed"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="author" jdbcType="VARCHAR" property="author"/>
+        <result column="gtm_create" jdbcType="TIMESTAMP" property="gtmCreate"/>
+        <result column="gtm_modified" jdbcType="TIMESTAMP" property="gtmModified"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        uuid, title, slug, created, modified, content, `type`, tags, categories, hits,
+        comments_num, allow_comment, allow_ping, allow_feed, `status`, author, gtm_create,
+        gtm_modified
+    </sql>
+
+    <select id="queryBlogContentPage" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List"/> from blog_content
+       where categories = #{categories}
+    </select>
+</mapper>
