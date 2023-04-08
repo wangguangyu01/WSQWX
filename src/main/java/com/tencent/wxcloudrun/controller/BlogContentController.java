@@ -55,8 +55,13 @@ public class BlogContentController {
      */
     @PostMapping(value = "/api/blogContent")
     ApiResponse get(@RequestBody CategoriesRequest categoriesRequest) {
-        logger.info("/api/blogContent get request{}", JSONObject.toJSONString(categoriesRequest));
-        IPage<BlogContent> blogContentIPage = blogContentService.BlogContentByCategoriesPage(categoriesRequest);
+        IPage<BlogContent> blogContentIPage = null;
+        try {
+            logger.info("/api/blogContent get request{}", JSONObject.toJSONString(categoriesRequest));
+            blogContentIPage = blogContentService.BlogContentByCategoriesPage(categoriesRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return ApiResponse.ok(blogContentIPage);
     }
 

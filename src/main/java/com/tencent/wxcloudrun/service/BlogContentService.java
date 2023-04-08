@@ -16,7 +16,7 @@ public interface BlogContentService {
      * @param categoriesRequest
      * @return
      */
-    IPage<BlogContent> BlogContentByCategoriesPage(CategoriesRequest categoriesRequest);
+    IPage<BlogContent> BlogContentByCategoriesPage(CategoriesRequest categoriesRequest) throws Exception;
 
     /**
      * 根据uuid查询内容详情
