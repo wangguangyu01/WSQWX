@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.WxUserMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxUser">
+    <!--@mbg.generated-->
+    <!--@Table wx_user-->
+    <id column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="appid" jdbcType="CHAR" property="appid" />
+    <result column="phone" jdbcType="CHAR" property="phone" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
+    <result column="unionid" jdbcType="VARCHAR" property="unionid" />
+    <result column="personProfile" jdbcType="LONGVARCHAR" property="personprofile" />
+    <result column="mating_requirement" jdbcType="LONGVARCHAR" property="matingRequirement" />
+    <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    openid, appid, phone, nickname, sex, birthday, city, province, headimgurl, unionid, 
+    personProfile, mating_requirement, qr_scene_str, create_time, update_time
+  </sql>
+</mapper>
