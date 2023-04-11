@@ -2,8 +2,10 @@ package com.tencent.wxcloudrun.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
+import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.WxUserService;
+import com.tencent.wxcloudrun.utils.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +50,12 @@ public class WxUserServiceImpl implements WxUserService {
     public boolean queryWxUserInfo(String code) {
         String openid= "";
         String url = weixinUrl + "sns/jscode2session?appid="+weixinAppId+"&secret="+weixinSecret+"&js_code="+code+"&grant_type=authorization_code";
-        ResponseEntity<JSONObject> responseEntity = restTemplate.getForEntity(url, JSONObject.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if (responseEntity.getStatusCodeValue() == 200) {
-            JSONObject body = responseEntity.getBody();
+            String body = responseEntity.getBody();
             if (!ObjectUtils.isEmpty(body)) {
-                openid = body.getString("openid");
+                UserOpenInfoDto userOpenInfoDto = JSONObject.parseObject(body, UserOpenInfoDto.class);
+                openid = userOpenInfoDto.getOpenid();
                 if (StringUtils.isNotBlank(openid)) {
                     WxUser wxUser = wxUserMapper.selectById(openid);
                     if (!ObjectUtils.isEmpty(wxUser)) {
