@@ -29,6 +29,12 @@ public class WxUser {
     private String appid;
 
     /**
+     * 微信号
+     */
+    @TableField(value = "wx_number")
+    private String wxNumber;
+
+    /**
      * 手机号
      */
     @TableField(value = "phone")

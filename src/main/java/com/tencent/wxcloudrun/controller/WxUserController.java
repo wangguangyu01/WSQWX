@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 微信用户接口
  */
@@ -21,8 +24,8 @@ public class WxUserController {
 
     @PostMapping(value = "/api/checkWxUser")
     public ApiResponse queryWxUserInfo(@RequestBody WxUserCodeDto code) {
-         boolean flag =  wxUserService.queryWxUserInfo(code.getCode());
-         return ApiResponse.ok(flag);
+        Map<String, Object> map = wxUserService.queryWxUserInfo(code.getCode());
+        return ApiResponse.ok(map);
     }
 
 

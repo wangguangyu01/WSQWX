@@ -6,6 +6,7 @@
     <!--@Table wx_user-->
     <id column="openid" jdbcType="VARCHAR" property="openid" />
     <result column="appid" jdbcType="CHAR" property="appid" />
+    <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
     <result column="phone" jdbcType="CHAR" property="phone" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="sex" jdbcType="TINYINT" property="sex" />
@@ -22,7 +23,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    openid, appid, phone, nickname, sex, birthday, city, province, headimgurl, unionid, 
-    personProfile, mating_requirement, qr_scene_str, create_time, update_time
+    openid, appid, wx_number, phone, nickname, sex, birthday, city, province, headimgurl, 
+    unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time
   </sql>
 </mapper>

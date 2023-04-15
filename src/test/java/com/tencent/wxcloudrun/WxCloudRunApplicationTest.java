@@ -1,10 +1,11 @@
 package com.tencent.wxcloudrun;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.tencent.wxcloudrun.dao.CountersMapper;
+import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.utils.DateUtils;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,10 @@ public class WxCloudRunApplicationTest {
         Date date1 = DateUtils.parseDate(date, DateUtils.DATE_TIME_PATTERN);
         Date date3 = DateUtils.parseDate(date2, DateUtils.DATE_TIME_PATTERN);
         System.out.println(DateUtils.dateCompareTo(date3, date1));
+
+
+        UserOpenInfoDto userOpenInfoDto = JSONObject.parseObject("{\"session_key\":\"C\\/Av3LqEi7sYeGW4zoR7WA==\",\"openid\":\"o0orR5Ky23-zyG74OInlL3QreR0s\"}",
+                UserOpenInfoDto.class);
+        System.out.println(userOpenInfoDto);
     }
 }
