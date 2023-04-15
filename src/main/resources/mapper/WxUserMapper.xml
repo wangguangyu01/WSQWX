@@ -13,6 +13,7 @@
     <result column="birthday" jdbcType="VARCHAR" property="birthday" />
     <result column="city" jdbcType="VARCHAR" property="city" />
     <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="region" jdbcType="VARCHAR" property="region"/>
     <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
     <result column="unionid" jdbcType="VARCHAR" property="unionid" />
     <result column="personProfile" jdbcType="LONGVARCHAR" property="personprofile" />
@@ -23,7 +24,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    openid, appid, wx_number, phone, nickname, sex, birthday, city, province, headimgurl, 
+    openid, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
     unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time
   </sql>
 </mapper>

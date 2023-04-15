@@ -46,11 +46,12 @@ public class WxUser {
     @TableField(value = "nickname")
     private String nickname;
 
+
     /**
      * 性别(0-未知、1-男、2-女)
      */
     @TableField(value = "sex")
-    private Byte sex;
+    private String sex;
 
     /**
      * 出生年月
@@ -69,6 +70,12 @@ public class WxUser {
      */
     @TableField(value = "province")
     private String province;
+
+    /**
+     * 地区
+     */
+    @TableField(value = "region")
+    private String region;
 
     /**
      * 头像
