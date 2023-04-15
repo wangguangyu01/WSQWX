@@ -21,13 +21,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @TableName(value = "blog_content")
 public class BlogContent {
-    @TableId(value = "cid", type = IdType.AUTO)
-    private Long cid;
+
 
     /**
      * 业务主键
      */
-    @TableField(value = "uuid")
+    @TableId(value = "uuid", type = IdType.INPUT)
     private String uuid;
 
     /**

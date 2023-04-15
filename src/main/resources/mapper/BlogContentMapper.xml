@@ -4,7 +4,6 @@
     <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.BlogContent">
         <!--@mbg.generated-->
         <!--@Table blog_content-->
-        <id column="cid" jdbcType="BIGINT" property="cid"/>
         <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="slug" jdbcType="VARCHAR" property="slug"/>
