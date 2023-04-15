@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxUser">
     <!--@mbg.generated-->
     <!--@Table wx_user-->
-    <id column="openid" jdbcType="VARCHAR" property="openid" />
+    <id column="openid" jdbcType="VARCHAR" property="openId" />
     <result column="appid" jdbcType="CHAR" property="appid" />
     <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
     <result column="phone" jdbcType="CHAR" property="phone" />
@@ -16,7 +16,7 @@
     <result column="region" jdbcType="VARCHAR" property="region"/>
     <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
     <result column="unionid" jdbcType="VARCHAR" property="unionid" />
-    <result column="personProfile" jdbcType="LONGVARCHAR" property="personprofile" />
+    <result column="personProfile" jdbcType="LONGVARCHAR" property="personProfile" />
     <result column="mating_requirement" jdbcType="LONGVARCHAR" property="matingRequirement" />
     <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />

@@ -20,7 +20,7 @@ public class WxUser {
      * 微信openid
      */
     @TableId(value = "openid", type = IdType.INPUT)
-    private String openid;
+    private String openId;
 
     /**
      * appid
@@ -93,7 +93,7 @@ public class WxUser {
      * 个人介绍
      */
     @TableField(value = "personProfile")
-    private String personprofile;
+    private String personProfile;
 
     /**
      * 择偶要求
