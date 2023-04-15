@@ -26,6 +26,14 @@ public class SysFile {
      * 文件类型
      */
     @TableField(value = "type")
+    /**
+     *  文件类型,
+     *     1:内容附件;
+     *     2:收款二维码
+     *     3：微信二维码
+     *     4: 个人图片,可能是二维码，也有可能是个人照片
+     */
+
     private Integer type;
 
     /**
