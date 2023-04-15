@@ -64,7 +64,6 @@ public class WxUserServiceImpl implements WxUserService {
         Map<String,Object> map = new HashMap<>();
         map.put("openid", "");
         map.put("flag", false);
-
         String url = weixinUrl + "sns/jscode2session?appid=" + weixinAppId + "&secret=" + weixinSecret + "&js_code=" + code + "&grant_type=authorization_code";
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if (responseEntity.getStatusCodeValue() == 200) {
@@ -89,5 +88,10 @@ public class WxUserServiceImpl implements WxUserService {
         return map;
     }
 
+
+    @Override
+    public int addWxUser(WxUser wxUser) {
+        return wxUserMapper.insert(wxUser);
+    }
 }
 

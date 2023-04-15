@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.service;
 
+import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.model.WxUser;
 
 import java.util.Map;
@@ -12,7 +13,10 @@ public interface WxUserService {
      * @param code
      * @return
      */
-    public Map<String,Object> queryWxUserInfo(String code);
+   Map<String,Object> queryWxUserInfo(String code);
+
+
+   int addWxUser(WxUser wxUser);
 
 
 
