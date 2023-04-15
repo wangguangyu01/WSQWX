@@ -1,5 +1,10 @@
 package com.tencent.wxcloudrun.service.impl;
 
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.crypto.SmUtil;
+import cn.hutool.crypto.digest.SM3;
+import cn.hutool.crypto.symmetric.SM4;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
@@ -43,6 +48,10 @@ public class WxUserServiceImpl implements WxUserService {
     private WxUserMapper wxUserMapper;
 
 
+    @Value("${slatKey:wx7290Wsqklollnk}")
+    private String slatKey;
+
+
     /**
      * 微信登录wx.login获取的code
      *
@@ -55,6 +64,7 @@ public class WxUserServiceImpl implements WxUserService {
         Map<String,Object> map = new HashMap<>();
         map.put("openid", "");
         map.put("flag", false);
+
         String url = weixinUrl + "sns/jscode2session?appid=" + weixinAppId + "&secret=" + weixinSecret + "&js_code=" + code + "&grant_type=authorization_code";
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if (responseEntity.getStatusCodeValue() == 200) {
@@ -62,16 +72,22 @@ public class WxUserServiceImpl implements WxUserService {
             if (!ObjectUtils.isEmpty(body)) {
                 UserOpenInfoDto userOpenInfoDto = JSONObject.parseObject(body, UserOpenInfoDto.class);
                 String openid = userOpenInfoDto.getOpenid();
-                if (StringUtils.isNotBlank(openid)) {
-                    WxUser wxUser = wxUserMapper.selectById(openid);
+                SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
+                String decryptStr = sm4.encryptHex(openid,  CharsetUtil.CHARSET_UTF_8);
+                if (StringUtils.isNotBlank(decryptStr)) {
+                    WxUser wxUser = wxUserMapper.selectById(decryptStr);
                     if (!ObjectUtils.isEmpty(wxUser)) {
-                        map.put("openid", openid);
+                        map.put("openid", decryptStr);
                         map.put("flag", true);
+                    } else {
+                        map.put("openid", decryptStr);
+                        map.put("flag", false);
                     }
                 }
             }
         }
         return map;
     }
+
 }
 

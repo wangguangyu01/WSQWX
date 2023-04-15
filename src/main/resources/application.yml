@@ -58,3 +58,5 @@ weixin:
   appid: wx638e212bbba9e7f7
   env: prod-0gws2yp30d12fdb1
   url: https://api.weixin.qq.com/
+#数据加密的key
+slatKey: wx7290Wsqklollnk

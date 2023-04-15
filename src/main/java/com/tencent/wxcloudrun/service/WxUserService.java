@@ -13,5 +13,8 @@ public interface WxUserService {
      * @return
      */
     public Map<String,Object> queryWxUserInfo(String code);
+
+
+
 }
 
