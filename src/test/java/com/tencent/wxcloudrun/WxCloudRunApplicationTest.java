@@ -7,8 +7,11 @@ import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
 import com.tencent.wxcloudrun.dao.CountersMapper;
+import com.tencent.wxcloudrun.dto.FileRequestDto;
+import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.model.Counter;
+import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,6 +44,8 @@ public class WxCloudRunApplicationTest {
     @Value("${slatKey:wx7290Wsqklollnk}")
     private String slatKey;
 
+    @Autowired
+    private AttachmentService attachmentService;
 
     @Test
     public void testCount() throws Exception {
@@ -64,6 +71,18 @@ public class WxCloudRunApplicationTest {
         System.out.println(decryptStr);
         String encrypt = sm4.decryptStr(decryptStr, CharsetUtil.CHARSET_UTF_8);
         System.out.println(encrypt);
+
+    }
+
+
+    @Test
+    public void tesFile() throws Exception {
+       String fileId= "cloud://prod-0gws2yp30d12fdb1.7072-prod-0gws2yp30d12fdb1-1317513730/6bee57cbc0b94400ae1c900f83cb4792.jpg";
+        FileRequestDto fileRequestDto = new FileRequestDto();
+        fileRequestDto.setFileid(fileId);
+        List<FileRequestDto> fileRequestDtoList = new ArrayList<>();
+        fileRequestDtoList.add(fileRequestDto);
+        List<FileResponseDto> dtoList = attachmentService.batchDownloadFile(fileRequestDtoList);
 
     }
 }

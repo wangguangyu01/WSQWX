@@ -34,4 +34,8 @@ public interface SysFileService {
      * @return
      */
     public SysFile queryFileOneByFileId(String fileId);
+
+
+
+    public int remove(String  fileId);
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,6 +67,29 @@ public class FileController {
                 }
             }
             return ApiResponse.ok();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.error("操作异常");
+    }
+
+
+    @ResponseBody
+    @PostMapping("/api/fileDelete")
+    ApiResponse fileDelete(@RequestBody UploadUserFileDto uploadUserFileDto) {
+        try {
+            fileService.remove(uploadUserFileDto.getFileid());
+            List<SysFile> fileList = fileService.queryFile(uploadUserFileDto.getOpenId(), 4);
+            // 直接返回腾讯在服务器上的id
+            List<String> fileIds = new ArrayList<>(10);
+            if (CollectionUtils.isEmpty(fileList)) {
+                return ApiResponse.ok(fileIds);
+            } else {
+                for (SysFile file: fileList) {
+                    fileIds.add(file.getFileId());
+                }
+            }
+            return ApiResponse.ok(fileIds);
         } catch (Exception e) {
             e.printStackTrace();
         }
