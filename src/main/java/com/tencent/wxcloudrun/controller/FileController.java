@@ -41,6 +41,7 @@ public class FileController {
     @PostMapping("/api/uploadFile" )
     public ApiResponse uploadFile(@RequestBody UploadUserFileDto uploadUserFileDto) throws IOException {
         try {
+            log.info("uploadFile uploadUserFileDto-->{}", uploadUserFileDto);
             List<String> paths = uploadUserFileDto.getFilePaths();
             if (CollectionUtils.isNotEmpty(uploadUserFileDto.getFilePaths())) {
                 List<FileRequestDto> list = new ArrayList<>();
