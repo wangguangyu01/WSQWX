@@ -10,6 +10,7 @@ import com.tencent.wxcloudrun.service.SysFileService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,27 +44,25 @@ public class FileController {
     public ApiResponse uploadFile(@RequestBody UploadUserFileDto uploadUserFileDto) throws IOException {
         try {
             log.info("uploadFile uploadUserFileDto-->{}", uploadUserFileDto);
-            List<String> paths = uploadUserFileDto.getFilePaths();
-            if (CollectionUtils.isNotEmpty(uploadUserFileDto.getFilePaths())) {
+            String fileid = uploadUserFileDto.getFileid();
+            if (StringUtils.isNotBlank(fileid)) {
                 List<FileRequestDto> list = new ArrayList<>();
-                for (String fileOne: paths) {
-                    FileRequestDto fileRequestDto = new FileRequestDto(fileOne);
-                    list.add(fileRequestDto);
-                    List<FileResponseDto> responseDtos = attachmentService.batchDownloadFile(list);
-                    Date date = new Date();
-                    for (FileResponseDto fileResponseDto : responseDtos) {
-                        Date expireTime  = DateUtils.calculateDate(date, Calendar.SECOND, fileResponseDto.getMax_age());
-                        SysFile sysFile = SysFile.builder()
-                                .fileId(fileResponseDto.getFileid())
-                                .createDate(new Date())
-                                .requestTime(new Date())
-                                .expireTime(expireTime)
-                                .url(fileResponseDto.getDownload_url())
-                                .contentId(uploadUserFileDto.getOpenId())
-                                .type(4)
-                                .build();
-                        fileService.saveFile(sysFile);
-                    }
+                FileRequestDto fileRequestDto = new FileRequestDto(fileid);
+                list.add(fileRequestDto);
+                List<FileResponseDto> responseDtos = attachmentService.batchDownloadFile(list);
+                Date date = new Date();
+                for (FileResponseDto fileResponseDto : responseDtos) {
+                    Date expireTime  = DateUtils.calculateDate(date, Calendar.SECOND, fileResponseDto.getMax_age());
+                    SysFile sysFile = SysFile.builder()
+                            .fileId(fileResponseDto.getFileid())
+                            .createDate(new Date())
+                            .requestTime(new Date())
+                            .expireTime(expireTime)
+                            .url(fileResponseDto.getDownload_url())
+                            .contentId(uploadUserFileDto.getOpenId())
+                            .type(4)
+                            .build();
+                    fileService.saveFile(sysFile);
                 }
             }
             return ApiResponse.ok();

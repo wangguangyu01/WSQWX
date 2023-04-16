@@ -14,10 +14,7 @@ public class UploadUserFileDto {
 
     private String openId;
 
-    /**
-     * 用户图片上传到腾讯服务器上的图片id
-     */
-    private List<String> filePaths;
+
 
 
     /**
