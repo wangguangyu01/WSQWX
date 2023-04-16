@@ -176,10 +176,10 @@ public class AttachmentServiceImpl implements AttachmentService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(JSONObject.toJSONString(body), httpHeaders);
-        ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(fileUploadUrl, request, JSONObject.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(fileUploadUrl, request, String.class);
         log.info("batchDownloadFile responseEntity--->{}", responseEntity.toString());
         if (responseEntity.getStatusCodeValue() == 200) {
-            JSONObject jsonObject = responseEntity.getBody();
+            JSONObject jsonObject = JSONObject.parseObject(responseEntity.getBody());
             String errcode = jsonObject.getString("errcode");
             if ("0".equals(errcode)) {
                 JSONArray jsonArray =jsonObject.getJSONArray("file_list");
