@@ -1,30 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tencent.wxcloudrun.dao.WxUserMapper">
-  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxUser">
-    <!--@mbg.generated-->
-    <!--@Table wx_user-->
-    <id column="openid" jdbcType="VARCHAR" property="openId" />
-    <result column="appid" jdbcType="CHAR" property="appid" />
-    <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
-    <result column="phone" jdbcType="CHAR" property="phone" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
-    <result column="sex" jdbcType="TINYINT" property="sex" />
-    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
-    <result column="city" jdbcType="VARCHAR" property="city" />
-    <result column="province" jdbcType="VARCHAR" property="province" />
-    <result column="region" jdbcType="VARCHAR" property="region"/>
-    <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
-    <result column="unionid" jdbcType="VARCHAR" property="unionid" />
-    <result column="personProfile" jdbcType="LONGVARCHAR" property="personProfile" />
-    <result column="mating_requirement" jdbcType="LONGVARCHAR" property="matingRequirement" />
-    <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    openid, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
-    unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time
-  </sql>
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxUser">
+        <!--@mbg.generated-->
+        <!--@Table wx_user-->
+        <id column="openid" jdbcType="VARCHAR" property="openId"/>
+        <result column="appid" jdbcType="CHAR" property="appid"/>
+        <result column="wx_number" jdbcType="VARCHAR" property="wxNumber"/>
+        <result column="phone" jdbcType="CHAR" property="phone"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="region" jdbcType="VARCHAR" property="region"/>
+        <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl"/>
+        <result column="unionid" jdbcType="VARCHAR" property="unionid"/>
+        <result column="personProfile" jdbcType="LONGVARCHAR" property="personProfile"/>
+        <result column="mating_requirement" jdbcType="LONGVARCHAR" property="matingRequirement"/>
+        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="education" jdbcType="VARCHAR" property="education"/>
+        <result column="occupation" jdbcType="VARCHAR" property="occupation"/>
+        <result column="remuneration" jdbcType="VARCHAR" property="remuneration"/>
+        <result column="approve" jdbcType="VARCHAR" property="approve"/>
+        <result column="marriage_seeking_flag" jdbcType="TINYINT" property="marriageSeekingFlag"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        openid, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
+        unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time,marriage_seeking_flag
+    </sql>
+    <select id="queryWxUserPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wx_user
+        <where>
+             1=1
+             and marriage_seeking_flag = '0'
+             and approve = #{wxUserPageParamDto.approve}
+            <if test="wxUserPageParamDto.birthdaySearch != null
+                    and wxUserPageParamDto.birthdaySearch != ''">
+                <!--这个查询是80后-->
+                <if test="wxUserPageParamDto.birthdaySearch == 1">
+                    and birthday between '1980-01-01' and '1989-12-31'
+                </if>
+
+                <!--这个查询是90后-->
+                <if test="wxUserPageParamDto.birthdaySearch == 2">
+                    and birthday between '1990-01-01' and '1999-12-31'
+                </if>
+            </if>
+            <if test="wxUserPageParamDto.region != null and wxUserPageParamDto.region != ''">
+                and region = #{wxUserPageParamDto.region}
+            </if>
+             <if test="wxUserPageParamDto.sex != null and wxUserPageParamDto.sex != ''">
+                and sex = #{wxUserPageParamDto.sex}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -2,9 +2,12 @@ package com.tencent.wxcloudrun.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.config.ApiResponse;
+import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.dto.WxUserCodeDto;
 import com.tencent.wxcloudrun.dto.WxUserDto;
+import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.WxUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +36,7 @@ public class WxUserController {
 
 
     @PostMapping(value = "/api/checkWxUser")
-    public ApiResponse queryWxUserInfo(@RequestBody WxUserCodeDto code) {
+    public ApiResponse checkWxUser(@RequestBody WxUserCodeDto code) {
         Map<String, Object> map = wxUserService.queryWxUserInfo(code.getCode());
         return ApiResponse.ok(map);
     }
@@ -59,5 +62,46 @@ public class WxUserController {
         return ApiResponse.error("添加失败");
     }
 
+
+    /**
+     * 注册人员信息
+     * @param wxUserPageParamDto
+     * @return
+     */
+    @PostMapping(value = "/api/queryWxUserPage")
+    public ApiResponse queryWxUserPage(@RequestBody WxUserPageParamDto wxUserPageParamDto) {
+        try {
+
+            log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(wxUserPageParamDto));
+            IPage<WxUser> wxUserIPage = wxUserService.queryWxUserPage(wxUserPageParamDto);
+            return ApiResponse.ok(wxUserIPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.error("数据获取失败");
+    }
+
+
+
+    /**
+     * 注册人员信息
+     * @param userOpenInfoDto
+     * @return
+     */
+    @PostMapping(value = "/api/queryWxUserInfo")
+    public ApiResponse queryWxUserInfo(@RequestBody UserOpenInfoDto userOpenInfoDto) {
+        try {
+
+            log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(userOpenInfoDto));
+            if (ObjectUtils.isEmpty(userOpenInfoDto)) {
+                return ApiResponse.error("缺少参数");
+            }
+            WxUser wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+            return ApiResponse.ok(wxUserOne);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.error("数据获取失败");
+    }
 
 }

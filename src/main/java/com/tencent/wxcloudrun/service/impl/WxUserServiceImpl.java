@@ -6,12 +6,21 @@ import cn.hutool.crypto.digest.SM3;
 import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
+import com.tencent.wxcloudrun.dto.CategoriesRequest;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
+import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
+import com.tencent.wxcloudrun.model.BlogContent;
+import com.tencent.wxcloudrun.model.SysFile;
 import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.service.SysFileService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -50,6 +61,9 @@ public class WxUserServiceImpl implements WxUserService {
 
     @Value("${slatKey:wx7290Wsqklollnk}")
     private String slatKey;
+
+    @Autowired
+    private SysFileService sysFileService;
 
 
     /**
@@ -92,6 +106,39 @@ public class WxUserServiceImpl implements WxUserService {
     @Override
     public int addWxUser(WxUser wxUser) {
         return wxUserMapper.insert(wxUser);
+    }
+
+
+    @Override
+    public IPage<WxUser> queryWxUserPage(WxUserPageParamDto wxUserPageParamDto) throws Exception {
+        wxUserPageParamDto.setApprove("通过");
+        Page page = new Page(wxUserPageParamDto.getCurrentPage(), wxUserPageParamDto.getLimit());
+        IPage<WxUser> wxUserIPage = wxUserMapper.queryWxUserPage(page, wxUserPageParamDto);
+
+
+        return wxUserIPage;
+    }
+
+
+    @Override
+    public WxUser queryWxUserOne(String openid) {
+        WxUser wxUser = new WxUser();
+        try {
+            wxUser = wxUserMapper.selectById(openid);
+            List<SysFile> list = sysFileService.queryFile(openid, 4);
+            List<String> imagePaths = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (SysFile file: list) {
+                    sysFileService.updateFileUrl(file);
+                    imagePaths.add(file.getUrl());
+                }
+                wxUser.setImagePaths(imagePaths);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return wxUser;
     }
 }
 

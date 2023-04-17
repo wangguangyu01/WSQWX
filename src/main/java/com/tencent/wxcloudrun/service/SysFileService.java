@@ -38,4 +38,6 @@ public interface SysFileService {
 
 
     public int remove(String  fileId);
+
+    public SysFile updateFileUrl(SysFile file) throws Exception;
 }

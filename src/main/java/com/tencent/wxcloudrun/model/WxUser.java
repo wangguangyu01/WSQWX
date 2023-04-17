@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -112,4 +114,43 @@ public class WxUser {
 
     @TableField(value = "update_time")
     private Date updateTime;
+
+    /**
+     * 学历
+     */
+    @TableField(value = "education")
+    private String education;
+
+
+    /**
+     * 职业
+     */
+    @TableField(value = "occupation")
+    private String occupation;
+
+
+
+    /**
+     * 月收入
+     */
+    @TableField(value = "remuneration")
+    private String remuneration;
+
+
+    /**
+     * 审批是否通过
+     */
+    @TableField(value = "approve")
+    private String approve;
+
+    @TableField(value = "marriage_seeking_flag")
+    private Integer marriageSeekingFlag;
+
+
+    /**
+     * 获取上传到服务器上的图片地址
+     */
+    @TableField(exist = false)
+    private List<String> imagePaths;
+
 }

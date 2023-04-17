@@ -3,15 +3,20 @@ package com.tencent.wxcloudrun.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tencent.wxcloudrun.dao.BlogContentMapper;
 import com.tencent.wxcloudrun.dao.SysFileMapper;
+import com.tencent.wxcloudrun.dto.FileRequestDto;
+import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.model.SysFile;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.SysFileService;
+import com.tencent.wxcloudrun.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -74,5 +79,27 @@ public class SysFileServiceImpl implements SysFileService {
               }
         }
         return sysFileMapper.deleteBatchIds(idList);
+    }
+
+
+    @Override
+    public SysFile updateFileUrl(SysFile file) throws Exception {
+        Date requestTime = file.getRequestTime();
+        Date expireTime  = DateUtils.calculateDate(requestTime, Calendar.SECOND, 7200);
+        if (DateUtils.dateCompareTo(new Date(), expireTime) == 0 || DateUtils.dateCompareTo(new Date(), expireTime) > 0) {
+            List<FileRequestDto> list = new ArrayList<>();
+            FileRequestDto fileRequestDto = new FileRequestDto(file.getFileId());
+            list.add(fileRequestDto);
+            List<FileResponseDto> responseDtos = attachmentService.batchDownloadFile(list);
+            Date date = new Date();
+            for (FileResponseDto fileResponseDto : responseDtos) {
+                expireTime  = DateUtils.calculateDate(date, Calendar.SECOND, fileResponseDto.getMax_age());
+                file.setUrl(fileResponseDto.getDownload_url());
+                file.setRequestTime(date);
+                file.setExpireTime(expireTime);
+                this.updateFile(file);
+            }
+        }
+        return file;
     }
 }
