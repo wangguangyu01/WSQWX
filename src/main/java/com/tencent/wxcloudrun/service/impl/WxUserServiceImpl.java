@@ -114,8 +114,6 @@ public class WxUserServiceImpl implements WxUserService {
         wxUserPageParamDto.setApprove("通过");
         Page page = new Page(wxUserPageParamDto.getCurrentPage(), wxUserPageParamDto.getLimit());
         IPage<WxUser> wxUserIPage = wxUserMapper.queryWxUserPage(page, wxUserPageParamDto);
-
-
         return wxUserIPage;
     }
 
