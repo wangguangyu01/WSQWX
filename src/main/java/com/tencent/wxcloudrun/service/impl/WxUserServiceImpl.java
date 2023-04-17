@@ -114,6 +114,18 @@ public class WxUserServiceImpl implements WxUserService {
         wxUserPageParamDto.setApprove("通过");
         Page page = new Page(wxUserPageParamDto.getCurrentPage(), wxUserPageParamDto.getLimit());
         IPage<WxUser> wxUserIPage = wxUserMapper.queryWxUserPage(page, wxUserPageParamDto);
+        if (!ObjectUtils.isEmpty(wxUserIPage)) {
+            List<WxUser> wxUsers = wxUserIPage.getRecords();
+            for (WxUser wxUser: wxUsers) {
+                List<SysFile> fileList  = sysFileService.queryFile(wxUser.getOpenId(), 4);
+                List<String> imagePaths = new ArrayList<>();
+                for (SysFile sysFile: fileList) {
+                    sysFileService.updateFileUrl(sysFile);
+                    imagePaths.add(sysFile.getUrl());
+                }
+                wxUser.setImagePaths(imagePaths);
+            }
+        }
         return wxUserIPage;
     }
 

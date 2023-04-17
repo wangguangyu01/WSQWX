@@ -30,7 +30,7 @@
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         openid, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
-        unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time,marriage_seeking_flag
+        unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time, education, occupation, approve, remuneration,marriage_seeking_flag
     </sql>
     <select id="queryWxUserPage" resultMap="BaseResultMap">
         select

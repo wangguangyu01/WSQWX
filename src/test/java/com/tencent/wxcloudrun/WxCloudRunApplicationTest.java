@@ -10,8 +10,10 @@ import com.tencent.wxcloudrun.dao.CountersMapper;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
+import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.service.AttachmentService;
+import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,8 @@ public class WxCloudRunApplicationTest {
 
     @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private WxUserService wxUserService;
 
     @Test
     public void testCount() throws Exception {
@@ -84,5 +88,14 @@ public class WxCloudRunApplicationTest {
         fileRequestDtoList.add(fileRequestDto);
         List<FileResponseDto> dtoList = attachmentService.batchDownloadFile(fileRequestDtoList);
 
+    }
+
+
+    @Test
+    public void testQueryUser() throws Exception {
+        WxUserPageParamDto wxUserPageParamDto = new WxUserPageParamDto();
+        wxUserPageParamDto.setCurrentPage(1);
+        wxUserPageParamDto.setLimit(10);
+        wxUserService.queryWxUserPage(wxUserPageParamDto);
     }
 }
