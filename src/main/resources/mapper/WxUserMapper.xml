@@ -30,33 +30,53 @@
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         openid, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
-        unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time, education, occupation, approve, remuneration,marriage_seeking_flag
+        unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time, education, occupation,
+        approve, remuneration,marriage_seeking_flag
     </sql>
     <select id="queryWxUserPage" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from wx_user
         <where>
-             1=1
-             and marriage_seeking_flag = '0'
-             and approve = #{wxUserPageParamDto.approve}
-            <if test="wxUserPageParamDto.birthdaySearch != null
-                    and wxUserPageParamDto.birthdaySearch != ''">
-                <!--这个查询是80后-->
-                <if test="wxUserPageParamDto.birthdaySearch == 1">
+            1 = 1
+                    and marriage_seeking_flag = '0'
+                    and approve = #{wxUserPageParamDto.approve}
+            <if test="wxUserPageParamDto.birthdaySexSearch != null
+                    and wxUserPageParamDto.birthdaySexSearch != ''">
+                <!--这个查询是80后女-->
+                <if test="wxUserPageParamDto.birthdaySexSearch == '1'.toString()">
                     and birthday between '1980-01-01' and '1989-12-31'
+                    and sex = '女'
                 </if>
 
-                <!--这个查询是90后-->
-                <if test="wxUserPageParamDto.birthdaySearch == 2">
+                <!--这个查询是80后男-->
+                <if test="wxUserPageParamDto.birthdaySexSearch == '2'.toString()">
+                    and birthday between '1980-01-01' and '1989-12-31'
+                    and sex = '男'
+                </if>
+
+                <!--这个查询是90后女-->
+                <if test="wxUserPageParamDto.birthdaySexSearch == '3'.toString()">
                     and birthday between '1990-01-01' and '1999-12-31'
+                    and sex = '女'
+                </if>
+
+                <!--这个查询是90后男-->
+                <if test="wxUserPageParamDto.birthdaySexSearch == '4'.toString()">
+                    and birthday between '1990-01-01' and '1999-12-31'
+                    and sex = '男'
                 </if>
             </if>
-            <if test="wxUserPageParamDto.region != null and wxUserPageParamDto.region != ''">
-                and region = #{wxUserPageParamDto.region}
-            </if>
-             <if test="wxUserPageParamDto.sex != null and wxUserPageParamDto.sex != ''">
-                and sex = #{wxUserPageParamDto.sex}
+            <if test="wxUserPageParamDto.regionSexSearch != null
+                    and wxUserPageParamDto.regionSexSearch != ''">
+                <if test="wxUserPageParamDto.regionSexSearch == '1'.toString() ">
+                    and province = '北京'
+                    and sex = '女'
+                </if>
+                <if test="wxUserPageParamDto.regionSexSearch == '2'.toString() ">
+                   and province = '北京'
+                    and sex = '男'
+                </if>
             </if>
         </where>
     </select>

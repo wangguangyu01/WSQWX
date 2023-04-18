@@ -17,23 +17,25 @@ public class WxUserPageParamDto implements Serializable {
 
     /**
      * 只支持80到90
-     * 1: 80后
-     * 2：90后
+     * 1: 80后女
+     * 2：80后男
+     * 3：90后女
+     * 4: 90后男
+     *
      *
      *  搜搜在这个日期前
      */
-    private String birthdaySearch;
+    private String birthdaySexSearch;
 
 
     /**
      * 根据地域查询
+     * 1:京户女
+     * 2:京户男
+     *
      */
-    private String region;
+    private String regionSexSearch;
 
-    /**
-     * 获取到的上班的工作人员
-     */
-    private String sex;
 
 
     /**

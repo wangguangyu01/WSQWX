@@ -6,12 +6,14 @@ import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.dao.CountersMapper;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.Counter;
+import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
@@ -96,6 +98,11 @@ public class WxCloudRunApplicationTest {
         WxUserPageParamDto wxUserPageParamDto = new WxUserPageParamDto();
         wxUserPageParamDto.setCurrentPage(1);
         wxUserPageParamDto.setLimit(10);
-        wxUserService.queryWxUserPage(wxUserPageParamDto);
+        wxUserPageParamDto.setBirthdaySexSearch("2");
+        IPage<WxUser> page = wxUserService.queryWxUserPage(wxUserPageParamDto);
+        List<WxUser> wxUsers = page.getRecords();
+        for (WxUser wxUser: wxUsers) {
+             System.out.println(JSONObject.toJSONString(wxUser));
+        }
     }
 }
