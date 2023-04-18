@@ -119,10 +119,10 @@ public class WxUserServiceImpl implements WxUserService {
             List<WxUser> wxUsers = wxUserIPage.getRecords();
             for (WxUser wxUser: wxUsers) {
                 List<SysFile> fileList  = sysFileService.queryFile(wxUser.getOpenId(), 4);
-                List<String> imagePaths = new ArrayList<>();
+                List<SysFile> imagePaths = new ArrayList<>();
                 for (SysFile sysFile: fileList) {
                     sysFileService.updateFileUrl(sysFile);
-                    imagePaths.add(sysFile.getUrl());
+                    imagePaths.add(sysFile);
                 }
                 wxUser.setImagePaths(imagePaths);
             }
@@ -137,11 +137,11 @@ public class WxUserServiceImpl implements WxUserService {
         try {
             wxUser = wxUserMapper.selectById(openid);
             List<SysFile> list = sysFileService.queryFile(openid, 4);
-            List<String> imagePaths = new ArrayList<>();
+            List<SysFile> imagePaths = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(list)) {
                 for (SysFile file: list) {
                     sysFileService.updateFileUrl(file);
-                    imagePaths.add(file.getUrl());
+                    imagePaths.add(file);
                 }
                 wxUser.setImagePaths(imagePaths);
             }

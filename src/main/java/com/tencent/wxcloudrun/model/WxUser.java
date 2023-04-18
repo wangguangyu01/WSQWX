@@ -151,6 +151,6 @@ public class WxUser {
      * 获取上传到服务器上的图片地址
      */
     @TableField(exist = false)
-    private List<String> imagePaths;
+    private List<SysFile> imagePaths;
 
 }
