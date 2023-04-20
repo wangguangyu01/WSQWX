@@ -21,5 +21,5 @@ public class FileidDeleteInfoDo implements Serializable {
     /**
      * 删除图片的fileid的errmsg
      */
-    private Integer  errmsg;
+    private String  errmsg;
 }
