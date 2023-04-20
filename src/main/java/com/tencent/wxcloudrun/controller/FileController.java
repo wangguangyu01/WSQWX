@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
@@ -77,6 +78,7 @@ public class FileController {
     @PostMapping("/api/fileDelete")
     ApiResponse fileDelete(@RequestBody UploadUserFileDto uploadUserFileDto) {
         try {
+            log.info("/api/fileDelete uploadUserFileDto--->{}", JSONObject.toJSONString(uploadUserFileDto));
             fileService.remove(uploadUserFileDto.getFileid());
             List<SysFile> fileList = fileService.queryFile(uploadUserFileDto.getOpenId(), 4);
             // 直接返回腾讯在服务器上的id
