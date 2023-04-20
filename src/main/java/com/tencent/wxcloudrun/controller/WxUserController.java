@@ -52,10 +52,13 @@ public class WxUserController {
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
             WxUser wxUser = new WxUser();
             BeanUtils.copyProperties(wxUserDto, wxUser);
-            int count = wxUserService.addWxUser(wxUser);
-            if (count > 0) {
-                return ApiResponse.ok(wxUser);
+            WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
+            if (ObjectUtils.isEmpty(wxUserObj)) {
+                wxUserService.addWxUser(wxUser);
+            } else {
+                wxUserService.updateWxUser(wxUser);
             }
+            return ApiResponse.ok(wxUser);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -151,5 +151,11 @@ public class WxUserServiceImpl implements WxUserService {
 
         return wxUser;
     }
+
+
+    @Override
+    public int updateWxUser(WxUser wxUser) {
+        return wxUserMapper.updateById(wxUser);
+    }
 }
 

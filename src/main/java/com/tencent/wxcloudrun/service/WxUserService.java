@@ -40,6 +40,9 @@ public interface WxUserService {
     WxUser queryWxUserOne(String openid) throws Exception;
 
 
+    int updateWxUser(WxUser wxUser);
+
+
 
 }
 
