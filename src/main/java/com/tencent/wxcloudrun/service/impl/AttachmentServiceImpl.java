@@ -5,8 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
+import com.tencent.wxcloudrun.dto.FileidDeleteInfoDo;
+import com.tencent.wxcloudrun.dto.FileidDeleteResponse;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.utils.FileUtil;
+import com.tencent.wxcloudrun.utils.JacksonUtils;
 import com.tencent.wxcloudrun.utils.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -204,23 +207,23 @@ public class AttachmentServiceImpl implements AttachmentService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(JSONObject.toJSONString(body), httpHeaders);
-        ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(batchdeletefileUrl, request, JSONObject.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(batchdeletefileUrl, request, String.class);
         List<String> list = new ArrayList<>();
         if (responseEntity.getStatusCodeValue() == 200) {
-            JSONObject jsonObject = responseEntity.getBody();
-            String errcode = jsonObject.getString("errcode");
-            if ("0".equals(errcode)) {
-                JSONArray jsonArray =jsonObject.getJSONArray("delete_list");
-                for (int i = 0; i < jsonArray.size(); i++) {
-                     JSONObject jsonObjectData = jsonArray.getJSONObject(i);
-                     if ("0".equals(jsonObjectData.getString("status"))) {
-                         list.add(jsonObjectData.getString("fileid"));
+            String resStr = responseEntity.getBody();
+            FileidDeleteResponse fileidDeleteResponse = JSONObject.parseObject(resStr, FileidDeleteResponse.class);
+            log.info("batchDeleteFile --->{}", JSONObject.toJSONString(fileidDeleteResponse));
+            if (fileidDeleteResponse.getErrcode() == 0) {
+                List<String> delete_list = fileidDeleteResponse.getDelete_list();
+                if (CollectionUtils.isNotEmpty(delete_list)) {
+                     for (String deleteFileStr: delete_list) {
+                         FileidDeleteInfoDo fileidDeleteInfoDo =   JSONObject.parseObject(deleteFileStr, FileidDeleteInfoDo.class);
+                         list.add(fileidDeleteInfoDo.getFileid());
                      }
                 }
-                return list;
             }
         }
 
-        return null;
+        return list;
     }
 }

@@ -68,9 +68,9 @@ public class SysFileServiceImpl implements SysFileService {
     public int remove(String  fileId) {
         List<String> fileid_list = new ArrayList<>();
         fileid_list.add(fileId);
-        attachmentService.batchDeleteFile(fileid_list);
+        List<String> list = attachmentService.batchDeleteFile(fileid_list);
         LambdaQueryWrapper<SysFile> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.eq(SysFile::getFileId, fileId);
+        queryWrapper.in(SysFile::getFileId, list);
         List<SysFile> sysFiles = sysFileMapper.selectList(queryWrapper);
         List<Long> idList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(sysFiles)) {
