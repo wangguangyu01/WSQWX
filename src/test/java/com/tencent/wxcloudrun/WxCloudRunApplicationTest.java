@@ -45,6 +45,7 @@ public class WxCloudRunApplicationTest {
 
 
 
+
     @Value("${slatKey:wx7290Wsqklollnk}")
     private String slatKey;
 
@@ -95,14 +96,8 @@ public class WxCloudRunApplicationTest {
 
     @Test
     public void testQueryUser() throws Exception {
-        WxUserPageParamDto wxUserPageParamDto = new WxUserPageParamDto();
-        wxUserPageParamDto.setCurrentPage(1);
-        wxUserPageParamDto.setLimit(10);
-        wxUserPageParamDto.setBirthdaySexSearch("2");
-        IPage<WxUser> page = wxUserService.queryWxUserPage(wxUserPageParamDto);
-        List<WxUser> wxUsers = page.getRecords();
-        for (WxUser wxUser: wxUsers) {
-             System.out.println(JSONObject.toJSONString(wxUser));
-        }
+        List<String> fileid_list = new ArrayList<>();
+        fileid_list.add("cloud://prod-0gws2yp30d12fdb1.7072-prod-0gws2yp30d12fdb1-1317513730/3eee2b8c23334d69a421d84037c68c07.jpg");
+        attachmentService.batchDeleteFile(fileid_list);
     }
 }

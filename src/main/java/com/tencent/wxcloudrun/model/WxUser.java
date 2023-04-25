@@ -30,6 +30,9 @@ public class WxUser {
     @TableField(value = "appid")
     private String appid;
 
+    @TableField(value = "serial_number")
+    private String serialNumber;
+
     /**
      * 微信号
      */
