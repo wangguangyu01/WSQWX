@@ -11,6 +11,7 @@ import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.WxUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -100,6 +101,12 @@ public class WxUserController {
                 return ApiResponse.error("缺少参数");
             }
             WxUser wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+            if (StringUtils.isBlank(wxUserOne.getHeight())) {
+                wxUserOne.setHeight("/");
+            }
+            if (StringUtils.isBlank(wxUserOne.getWeight())) {
+                wxUserOne.setWeight("/");
+            }
             return ApiResponse.ok(wxUserOne);
         } catch (Exception e) {
             e.printStackTrace();

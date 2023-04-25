@@ -11,6 +11,8 @@
         <result column="phone" jdbcType="CHAR" property="phone"/>
         <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
         <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="height" jdbcType="DOUBLE" property="height"/>
+        <result column="weight" jdbcType="DOUBLE" property="weight"/>
         <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
         <result column="city" jdbcType="VARCHAR" property="city"/>
         <result column="province" jdbcType="VARCHAR" property="province"/>
@@ -30,7 +32,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        openid, serial_number, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
+        openid, serial_number, height, weight, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
         unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time, education, occupation,
         approve, remuneration,marriage_seeking_flag
     </sql>

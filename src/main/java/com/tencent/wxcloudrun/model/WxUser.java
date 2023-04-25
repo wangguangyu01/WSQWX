@@ -58,6 +58,15 @@ public class WxUser {
     @TableField(value = "sex")
     private String sex;
 
+
+    @TableField(value = "height")
+    private String height;
+
+
+
+    @TableField(value = "weight")
+    private String weight;
+
     /**
      * 出生年月
      */
