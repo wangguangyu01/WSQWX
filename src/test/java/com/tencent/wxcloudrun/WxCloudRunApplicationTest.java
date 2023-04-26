@@ -22,13 +22,18 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -53,6 +58,9 @@ public class WxCloudRunApplicationTest {
     private AttachmentService attachmentService;
     @Autowired
     private WxUserService wxUserService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Test
     public void testCount() throws Exception {
@@ -100,4 +108,30 @@ public class WxCloudRunApplicationTest {
         fileid_list.add("cloud://prod-0gws2yp30d12fdb1.7072-prod-0gws2yp30d12fdb1-1317513730/3eee2b8c23334d69a421d84037c68c07.jpg");
         attachmentService.batchDeleteFile(fileid_list);
     }
+
+
+    @Test
+    public void testRedis() throws Exception {
+        LocalDateTime nowTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        String dateStr = dateTimeFormatter.format(nowTime);
+
+        DateTimeFormatter inceKeyFormat = DateTimeFormatter.ofPattern("yyyy:MM:dd");
+        String formatMinute = inceKeyFormat.format(nowTime);
+        String key = formatMinute;
+
+        Double randExpireTime = Math.floor(Math.random() * 10) + 24;
+        RedisAtomicLong redisAtomicLong = new RedisAtomicLong("testKey", redisTemplate.getConnectionFactory());
+        Long incrementAndGet = redisAtomicLong.incrementAndGet();
+        Long expire1 = redisAtomicLong.getExpire();
+        System.out.println(expire1);
+        redisAtomicLong.expire(200, TimeUnit.MILLISECONDS);
+        expire1 = redisAtomicLong.getExpire();
+        System.out.println(expire1);
+        int incrementResult = incrementAndGet.intValue() % 999;
+
+        String incrementStr = String.format("%03d", incrementResult);
+        System.out.println(incrementStr);
+    }
+
 }
