@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.dto.CategoriesRequest;
 import com.tencent.wxcloudrun.dto.WxUserDto;
+import com.tencent.wxcloudrun.dto.WxUserInfoVo;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.WxUser;
@@ -41,6 +42,10 @@ public interface WxUserService {
 
 
     int updateWxUser(WxUser wxUser);
+
+
+
+    public WxUserInfoVo updatewxUser(String code);
 
 
 

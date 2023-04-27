@@ -16,6 +16,7 @@ import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.SysFile;
 import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.SysFileService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
@@ -64,6 +65,10 @@ public class WxUserServiceImpl implements WxUserService {
 
     @Autowired
     private SysFileService sysFileService;
+
+
+    @Autowired
+    private AttachmentService attachmentService;
 
 
     /**
@@ -148,7 +153,6 @@ public class WxUserServiceImpl implements WxUserService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return wxUser;
     }
 
@@ -157,5 +161,8 @@ public class WxUserServiceImpl implements WxUserService {
     public int updateWxUser(WxUser wxUser) {
         return wxUserMapper.updateById(wxUser);
     }
+
+
+
 }
 
