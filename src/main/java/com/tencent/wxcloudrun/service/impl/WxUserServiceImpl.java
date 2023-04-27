@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
 import com.tencent.wxcloudrun.dto.CategoriesRequest;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
+import com.tencent.wxcloudrun.dto.WxUserInfoVo;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.SysFile;
@@ -162,7 +163,9 @@ public class WxUserServiceImpl implements WxUserService {
         return wxUserMapper.updateById(wxUser);
     }
 
-
-
+    @Override
+    public WxUserInfoVo updatewxUser(String code) {
+        return null;
+    }
 }
 
