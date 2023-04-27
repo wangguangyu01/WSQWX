@@ -6,10 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,6 +44,11 @@ public class DateUtils {
      */
     public final static DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+
+    /**
+     * 线程安全的时间格式化类
+     */
+    public final static DateTimeFormatter date_df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static String format(Date date) {
         return format(date, DATE_PATTERN);
@@ -206,7 +208,7 @@ public class DateUtils {
      * @param pattern 格式
      * @return
      */
-    public static Date parseDate(String dateStr, String pattern) {
+    public static Date parseDateTime(String dateStr, String pattern) {
         if (StringUtils.isBlank(dateStr)) {
             return null;
         }
@@ -228,6 +230,35 @@ public class DateUtils {
     }
 
 
+
+    /**
+     * 根据pattern格式，解析时间
+     *
+     * @param dateStr 时间
+     * @param pattern 格式
+     * @return
+     */
+    public static Date parseDate(String dateStr, String pattern) {
+        if (StringUtils.isBlank(dateStr)) {
+            return null;
+        }
+        boolean flag = validDateTime(dateStr);
+        if (flag) {
+            LocalDate localDate = null;
+            if (pattern.equals(DateUtils.DATE_TIME_PATTERN)) {
+                localDate = LocalDate.parse(dateStr, df);
+            } else {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+                localDate = LocalDate.parse(dateStr, dateTimeFormatter);
+            }
+            ZoneId zoneId = ZoneId.systemDefault();
+            Instant instant = localDate.atStartOfDay().atZone(zoneId).toInstant();
+            Date date = Date.from(instant);
+            return date;
+        }
+        return null;
+    }
+
     public static LocalDateTime parse(String str) {
         try {
             return LocalDateTime.parse(str, yyMMddHHmmss);
@@ -236,6 +267,18 @@ public class DateUtils {
             return null;
         }
     }
+
+
+
+    public static LocalDate parseDate(String str) {
+        try {
+            return LocalDate.parse(str, date_df);
+        } catch (Exception e) {
+            log.error("日期格式错误：[{}]", str);
+            return null;
+        }
+    }
+
 
 
     /**

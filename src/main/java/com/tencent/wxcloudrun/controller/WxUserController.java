@@ -9,6 +9,7 @@ import com.tencent.wxcloudrun.dto.WxUserCodeDto;
 import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,8 @@ public class WxUserController {
     @Autowired
     private WxUserService wxUserService;
 
+    @Autowired
+    private TSerialNumberService tSerialNumberService;
 
 
 
@@ -55,6 +58,8 @@ public class WxUserController {
             BeanUtils.copyProperties(wxUserDto, wxUser);
             WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
             if (ObjectUtils.isEmpty(wxUserObj)) {
+                String serialNumber = tSerialNumberService.createSerialNumber();
+                wxUser.setSerialNumber(serialNumber);
                 wxUserService.addWxUser(wxUser);
             } else {
                 wxUserService.updateWxUser(wxUser);

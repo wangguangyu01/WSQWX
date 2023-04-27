@@ -6,17 +6,21 @@ import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.dao.CountersMapper;
+import com.tencent.wxcloudrun.dao.TSerialNumberMapper;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.Counter;
+import com.tencent.wxcloudrun.model.TSerialNumber;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +29,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -61,6 +67,9 @@ public class WxCloudRunApplicationTest {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private TSerialNumberMapper tSerialNumberMapper;
 
     @Test
     public void testCount() throws Exception {
@@ -112,25 +121,43 @@ public class WxCloudRunApplicationTest {
 
     @Test
     public void testRedis() throws Exception {
-        LocalDateTime nowTime = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-        String dateStr = dateTimeFormatter.format(nowTime);
+        Date date = new Date();
+        String dateStr = DateUtils.format(date, DateUtils.DATE_PATTERN);
+        Date date1 = DateUtils.parseDate(dateStr, DateUtils.DATE_PATTERN);
+        LambdaQueryWrapper<TSerialNumber> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TSerialNumber::getUpdateDate, date1);
+        List<TSerialNumber> tSerialNumbers = tSerialNumberMapper.selectList(queryWrapper);
 
-        DateTimeFormatter inceKeyFormat = DateTimeFormatter.ofPattern("yyyy:MM:dd");
-        String formatMinute = inceKeyFormat.format(nowTime);
-        String key = formatMinute;
+        TSerialNumber tSerialNumber = null;
+        if (CollectionUtils.isEmpty(tSerialNumbers)) {
+            tSerialNumber = new TSerialNumber();
+        } else {
+            tSerialNumber = tSerialNumbers.get(0);
+        }
+        Long incrementAndGet = null;
+        try {
+            RedisAtomicLong redisAtomicLong = new RedisAtomicLong("testKey", redisTemplate.getConnectionFactory());
+            if (tSerialNumber.getId() == null) {
+                incrementAndGet = redisAtomicLong.incrementAndGet();
+            } else {
+                 Long serialNumber = tSerialNumber.getSerialNumber();
+                 incrementAndGet = redisAtomicLong.updateAndGet(value -> serialNumber + 1);
+            }
 
-        Double randExpireTime = Math.floor(Math.random() * 10) + 24;
-        RedisAtomicLong redisAtomicLong = new RedisAtomicLong("testKey", redisTemplate.getConnectionFactory());
-        Long incrementAndGet = redisAtomicLong.incrementAndGet();
-        Long expire1 = redisAtomicLong.getExpire();
-        System.out.println(expire1);
-        redisAtomicLong.expire(200, TimeUnit.MILLISECONDS);
-        expire1 = redisAtomicLong.getExpire();
-        System.out.println(expire1);
-        int incrementResult = incrementAndGet.intValue() % 999;
-
-        String incrementStr = String.format("%03d", incrementResult);
+        } catch (Exception e) {
+            Long serialNumber = tSerialNumber.getSerialNumber();
+            if (!ObjectUtils.isEmpty(serialNumber)) {
+                incrementAndGet = serialNumber + 1;
+            }
+        }
+        tSerialNumber.setSerialNumber(incrementAndGet);
+        tSerialNumber.setUpdateDate(new Date());
+        if (tSerialNumber.getId() == null) {
+            tSerialNumberMapper.insert(tSerialNumber);
+        } else {
+            tSerialNumberMapper.updateById(tSerialNumber);
+        }
+        String incrementStr = String.format("%03d", incrementAndGet);
         System.out.println(incrementStr);
     }
 
