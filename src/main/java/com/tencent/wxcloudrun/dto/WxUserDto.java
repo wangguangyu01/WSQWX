@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 
 @Data
-public class WxUserDto extends WxUser {
+public class WxUserDto extends WxUser implements Serializable {
 }
