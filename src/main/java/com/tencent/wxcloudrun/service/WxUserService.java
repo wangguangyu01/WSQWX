@@ -43,9 +43,10 @@ public interface WxUserService {
 
     int updateWxUser(WxUser wxUser);
 
+    WxUser queryWxUserOneByPhone(String phone) throws Exception;
 
 
-    public WxUserInfoVo updatewxUser(String code);
+
 
 
 

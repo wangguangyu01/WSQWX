@@ -105,7 +105,12 @@ public class WxUserController {
             if (ObjectUtils.isEmpty(userOpenInfoDto)) {
                 return ApiResponse.error("缺少参数");
             }
-            WxUser wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+            WxUser wxUserOne = new WxUser();
+            if (StringUtils.isNotBlank(userOpenInfoDto.getOpenid())) {
+                 wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+            } else if (StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
+                wxUserOne = wxUserService.queryWxUserOneByPhone(userOpenInfoDto.getPhone());
+            }
             if (StringUtils.isBlank(wxUserOne.getHeight())) {
                 wxUserOne.setHeight("/");
             }

@@ -163,9 +163,33 @@ public class WxUserServiceImpl implements WxUserService {
         return wxUserMapper.updateById(wxUser);
     }
 
+
+
+
     @Override
-    public WxUserInfoVo updatewxUser(String code) {
-        return null;
+    public WxUser queryWxUserOneByPhone(String phone) throws Exception {
+
+        WxUser wxUser = new WxUser();
+        try {
+            LambdaQueryWrapper<WxUser> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(WxUser::getPhone, phone);
+            wxUser = wxUserMapper.selectOne(queryWrapper);
+            List<SysFile> list = sysFileService.queryFile(wxUser.getOpenId(), 4);
+            List<SysFile> imagePaths = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (SysFile file: list) {
+                    sysFileService.updateFileUrl(file);
+                    imagePaths.add(file);
+                }
+                wxUser.setImagePaths(imagePaths);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return wxUser;
     }
+
+
 }
 

@@ -18,6 +18,7 @@ import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.model.TSerialNumber;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
+import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,7 +70,7 @@ public class WxCloudRunApplicationTest {
     private RedisTemplate redisTemplate;
 
     @Autowired
-    private TSerialNumberMapper tSerialNumberMapper;
+    private TSerialNumberService tSerialNumberService;
 
     @Test
     public void testCount() throws Exception {
@@ -121,44 +122,8 @@ public class WxCloudRunApplicationTest {
 
     @Test
     public void testRedis() throws Exception {
-        Date date = new Date();
-        String dateStr = DateUtils.format(date, DateUtils.DATE_PATTERN);
-        Date date1 = DateUtils.parseDate(dateStr, DateUtils.DATE_PATTERN);
-        LambdaQueryWrapper<TSerialNumber> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(TSerialNumber::getUpdateDate, date1);
-        List<TSerialNumber> tSerialNumbers = tSerialNumberMapper.selectList(queryWrapper);
-
-        TSerialNumber tSerialNumber = null;
-        if (CollectionUtils.isEmpty(tSerialNumbers)) {
-            tSerialNumber = new TSerialNumber();
-        } else {
-            tSerialNumber = tSerialNumbers.get(0);
-        }
-        Long incrementAndGet = null;
-        try {
-            RedisAtomicLong redisAtomicLong = new RedisAtomicLong("testKey", redisTemplate.getConnectionFactory());
-            if (tSerialNumber.getId() == null) {
-                incrementAndGet = redisAtomicLong.incrementAndGet();
-            } else {
-                 Long serialNumber = tSerialNumber.getSerialNumber();
-                 incrementAndGet = redisAtomicLong.updateAndGet(value -> serialNumber + 1);
-            }
-
-        } catch (Exception e) {
-            Long serialNumber = tSerialNumber.getSerialNumber();
-            if (!ObjectUtils.isEmpty(serialNumber)) {
-                incrementAndGet = serialNumber + 1;
-            }
-        }
-        tSerialNumber.setSerialNumber(incrementAndGet);
-        tSerialNumber.setUpdateDate(new Date());
-        if (tSerialNumber.getId() == null) {
-            tSerialNumberMapper.insert(tSerialNumber);
-        } else {
-            tSerialNumberMapper.updateById(tSerialNumber);
-        }
-        String incrementStr = String.format("%03d", incrementAndGet);
-        System.out.println(incrementStr);
+        String serialNumber = tSerialNumberService.createSerialNumber();
+        System.out.println(serialNumber);
     }
 
 }

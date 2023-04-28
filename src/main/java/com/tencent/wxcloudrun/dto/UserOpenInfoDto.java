@@ -27,6 +27,9 @@ public class UserOpenInfoDto implements Serializable {
      */
     private String openid;
 
+
+    private String phone;
+
     private String errmsg;
 
     private String errcode;

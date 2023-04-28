@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
@@ -70,6 +71,8 @@ public class TSerialNumberServiceImpl extends ServiceImpl<TSerialNumberMapper, T
             tSerialNumberMapper.updateById(tSerialNumber);
         }
         String incrementStr = String.format("%03d", incrementAndGet);
-        return dateStr + incrementStr;
+        String serialNumber = dateStr + incrementStr;
+        serialNumber = StringUtils.replaceAll(serialNumber, "-", "");
+        return serialNumber;
     }
 }
