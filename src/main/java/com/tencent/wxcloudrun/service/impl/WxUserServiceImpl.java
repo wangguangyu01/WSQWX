@@ -191,5 +191,18 @@ public class WxUserServiceImpl implements WxUserService {
     }
 
 
+    @Override
+    public int queryCount(String openid) {
+        LambdaQueryWrapper<WxUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WxUser::getOpenId, openid);
+        return wxUserMapper.selectCount(queryWrapper);
+    }
+
+    @Override
+    public int queryPhoneCount(String phone) {
+        LambdaQueryWrapper<WxUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WxUser::getPhone, phone);
+        return wxUserMapper.selectCount(queryWrapper);
+    }
 }
 

@@ -106,16 +106,23 @@ public class WxUserController {
                 return ApiResponse.error("缺少参数");
             }
             WxUser wxUserOne = new WxUser();
+            int openIdCount = 0;
             if (StringUtils.isNotBlank(userOpenInfoDto.getOpenid())) {
-                 wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
-            } else if (StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
+                 openIdCount = wxUserService.queryCount(userOpenInfoDto.getOpenid());
+                 if (openIdCount != 0) {
+                     wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+                 }
+            }
+
+            if (openIdCount == 0 && StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
                 wxUserOne = wxUserService.queryWxUserOneByPhone(userOpenInfoDto.getPhone());
             }
-            if (StringUtils.isBlank(wxUserOne.getHeight())) {
-                wxUserOne.setHeight("/");
+
+            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getHeight())) {
+                wxUserOne.setHeight("-");
             }
-            if (StringUtils.isBlank(wxUserOne.getWeight())) {
-                wxUserOne.setWeight("/");
+            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
+                wxUserOne.setWeight("-");
             }
             return ApiResponse.ok(wxUserOne);
         } catch (Exception e) {
