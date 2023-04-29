@@ -56,12 +56,17 @@ public class WxUserController {
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
             WxUser wxUser = new WxUser();
             BeanUtils.copyProperties(wxUserDto, wxUser);
+            wxUser.setApprove("待审核");
             WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
-            if (ObjectUtils.isEmpty(wxUserObj)) {
+            int count = wxUserService.queryPhoneCount(wxUserDto.getPhone());
+            if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
                 String serialNumber = tSerialNumberService.createSerialNumber();
                 wxUser.setSerialNumber(serialNumber);
                 wxUserService.addWxUser(wxUser);
-            } else {
+            } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
+                wxUserService.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
+                wxUserService.updateWxUser(wxUser);
+            } else if (!ObjectUtils.isEmpty(wxUserObj)) {
                 wxUserService.updateWxUser(wxUser);
             }
             return ApiResponse.ok(wxUser);

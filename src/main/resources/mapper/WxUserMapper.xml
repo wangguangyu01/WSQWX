@@ -32,7 +32,8 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        openid, serial_number, height, weight, appid, wx_number, phone, nickname, sex, birthday, city, province, region, headimgurl,
+        openid, serial_number, height, weight, appid, wx_number, phone, nickname, sex, birthday, city, province, region,
+        headimgurl,
         unionid, personProfile, mating_requirement, qr_scene_str, create_time, update_time, education, occupation,
         approve, remuneration,marriage_seeking_flag
     </sql>
@@ -72,15 +73,19 @@
             </if>
             <if test="wxUserPageParamDto.regionSexSearch != null
                     and wxUserPageParamDto.regionSexSearch != ''">
-                <if test="wxUserPageParamDto.regionSexSearch == '1'.toString() ">
+                <if test="wxUserPageParamDto.regionSexSearch == '1'.toString()">
                     and province = '北京'
                     and sex = '女'
                 </if>
-                <if test="wxUserPageParamDto.regionSexSearch == '2'.toString() ">
-                   and province = '北京'
+                <if test="wxUserPageParamDto.regionSexSearch == '2'.toString()">
+                    and province = '北京'
                     and sex = '男'
                 </if>
             </if>
         </where>
     </select>
+
+    <update id="updateByPhone">
+       update wx_user set openid = #{openId} where phone =#{phone}
+    </update>
 </mapper>

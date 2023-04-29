@@ -54,6 +54,9 @@ public interface WxUserService {
     int queryPhoneCount(String phone);
 
 
+    int updateByPhone(String openid, String phone);
+
+
 
 }
 

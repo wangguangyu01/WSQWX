@@ -166,6 +166,7 @@ public class WxUserServiceImpl implements WxUserService {
 
 
 
+
     @Override
     public WxUser queryWxUserOneByPhone(String phone) throws Exception {
 
@@ -203,6 +204,12 @@ public class WxUserServiceImpl implements WxUserService {
         LambdaQueryWrapper<WxUser> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WxUser::getPhone, phone);
         return wxUserMapper.selectCount(queryWrapper);
+    }
+
+
+    @Override
+    public int updateByPhone(String openid,String phone) {
+        return  wxUserMapper.updateByPhone(openid, phone);
     }
 }
 

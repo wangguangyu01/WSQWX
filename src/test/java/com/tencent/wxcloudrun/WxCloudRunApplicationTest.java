@@ -21,7 +21,9 @@ import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
+import com.tencent.wxcloudrun.utils.UUIDGenerator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +126,16 @@ public class WxCloudRunApplicationTest {
     public void testRedis() throws Exception {
         String serialNumber = tSerialNumberService.createSerialNumber();
         System.out.println(serialNumber);
+    }
+
+
+
+    @Test
+    public void testUpdateUser() throws Exception {
+        String uuid = UUIDGenerator.getUUID();
+        System.out.println(uuid);
+        int count = wxUserService.updateByPhone(uuid, "13535356755");
+        Assert.assertTrue(count >= 0);
     }
 
 }

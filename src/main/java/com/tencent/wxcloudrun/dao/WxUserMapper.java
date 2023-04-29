@@ -12,5 +12,8 @@ public interface WxUserMapper extends BaseMapper<WxUser> {
 
 
     IPage<WxUser> queryWxUserPage(@Param("page") Page page,
-                                            @Param("wxUserPageParamDto") WxUserPageParamDto wxUserPageParamDto);
+                                  @Param("wxUserPageParamDto") WxUserPageParamDto wxUserPageParamDto);
+
+
+    int updateByPhone(@Param("openId") String openId, @Param("phone") String phone);
 }
