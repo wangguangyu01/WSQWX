@@ -33,7 +33,6 @@ public class SysFile {
      *     3：微信二维码
      *     4: 个人图片,可能是二维码，也有可能是个人照片
      */
-
     private Integer type;
 
     /**

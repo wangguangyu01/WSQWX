@@ -142,19 +142,93 @@ public class WxUserServiceImpl implements WxUserService {
         WxUser wxUser = new WxUser();
         try {
             wxUser = wxUserMapper.selectById(openid);
-            List<SysFile> list = sysFileService.queryFile(openid, 4);
-            List<SysFile> imagePaths = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(list)) {
-                for (SysFile file: list) {
-                    sysFileService.updateFileUrl(file);
-                    imagePaths.add(file);
-                }
-                wxUser.setImagePaths(imagePaths);
-            }
+            getWxUserFile(openid, wxUser);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return wxUser;
+    }
+
+    private void getWxUserFile(String openid, WxUser wxUser) throws Exception {
+        // 个人照片秀
+        List<SysFile> list = sysFileService.queryFile(openid, 4);
+        List<SysFile> imagePaths = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (SysFile file: list) {
+                sysFileService.updateFileUrl(file);
+                imagePaths.add(file);
+            }
+            wxUser.setImagePaths(imagePaths);
+        }
+
+        // 身份证
+        List<SysFile> identityCard = sysFileService.queryFile(openid, 5);
+        List<SysFile> identityCardList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(identityCard)) {
+            for (SysFile identityCardFile: identityCard) {
+                sysFileService.updateFileUrl(identityCardFile);
+                identityCardList.add(identityCardFile);
+            }
+            wxUser.setIdentityCard(identityCardList);
+        }
+
+        // 收入证明
+        List<SysFile> salary = sysFileService.queryFile(openid, 6);
+        List<SysFile> salaryList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(salary)) {
+            for (SysFile salaryFile: salary) {
+                sysFileService.updateFileUrl(salaryFile);
+                salaryList.add(salaryFile);
+            }
+            wxUser.setSalary(salaryList);
+        }
+
+
+        // 学历证明
+        List<SysFile> academicCertificate = sysFileService.queryFile(openid, 7);
+        List<SysFile> academicCertificateList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(academicCertificate)) {
+            for (SysFile academicCertificateFile: academicCertificate) {
+                sysFileService.updateFileUrl(academicCertificateFile);
+                academicCertificateList.add(academicCertificateFile);
+            }
+            wxUser.setAcademicCertificate(academicCertificateList);
+        }
+
+
+
+        // 行车证
+        List<SysFile> vehicleLicense = sysFileService.queryFile(openid, 8);
+        List<SysFile> vehicleLicenseList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(vehicleLicense)) {
+            for (SysFile vehicleLicenseFile: vehicleLicense) {
+                sysFileService.updateFileUrl(vehicleLicenseFile);
+                vehicleLicenseList.add(vehicleLicenseFile);
+            }
+            wxUser.setVehicleLicense(vehicleLicenseList);
+        }
+
+        // 征信
+        List<SysFile> credit = sysFileService.queryFile(openid, 9);
+        List<SysFile> creditList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(credit)) {
+            for (SysFile creditFile: credit) {
+                sysFileService.updateFileUrl(creditFile);
+                creditList.add(creditFile);
+            }
+            wxUser.setCredit(creditList);
+        }
+
+        // 房本
+        List<SysFile> premisesPermit = sysFileService.queryFile(openid, 10);
+        List<SysFile> premisesPermitList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(premisesPermit)) {
+            for (SysFile premisesPermitFile: premisesPermit) {
+                sysFileService.updateFileUrl(premisesPermitFile);
+                premisesPermitList.add(premisesPermitFile);
+            }
+            wxUser.setPremisesPermit(premisesPermitList);
+        }
     }
 
 
@@ -175,15 +249,7 @@ public class WxUserServiceImpl implements WxUserService {
             LambdaQueryWrapper<WxUser> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(WxUser::getPhone, phone);
             wxUser = wxUserMapper.selectOne(queryWrapper);
-            List<SysFile> list = sysFileService.queryFile(wxUser.getOpenId(), 4);
-            List<SysFile> imagePaths = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(list)) {
-                for (SysFile file: list) {
-                    sysFileService.updateFileUrl(file);
-                    imagePaths.add(file);
-                }
-                wxUser.setImagePaths(imagePaths);
-            }
+            getWxUserFile(wxUser.getOpenId(), wxUser);
         } catch (Exception e) {
             e.printStackTrace();
         }

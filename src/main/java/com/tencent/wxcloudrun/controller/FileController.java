@@ -61,7 +61,7 @@ public class FileController {
                             .expireTime(expireTime)
                             .url(fileResponseDto.getDownload_url())
                             .contentId(uploadUserFileDto.getOpenId())
-                            .type(4)
+                            .type(uploadUserFileDto.getType())
                             .build();
                     fileService.saveFile(sysFile);
                 }

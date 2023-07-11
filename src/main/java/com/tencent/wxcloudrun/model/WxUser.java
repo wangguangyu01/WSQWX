@@ -167,4 +167,47 @@ public class WxUser implements Serializable {
     @TableField(exist = false)
     private List<SysFile> imagePaths;
 
+
+    /**
+     * 身份证
+     */
+    @TableField(exist = false)
+    private List<SysFile> identityCard;
+
+
+    /**
+     * 收入证明
+     */
+    @TableField(exist = false)
+    private List<SysFile> salary;
+
+
+    /**
+     * 学历证明
+     */
+    @TableField(exist = false)
+    private List<SysFile> academicCertificate;
+
+
+
+    /**
+     * 行车证
+     */
+    @TableField(exist = false)
+    private List<SysFile> vehicleLicense;
+
+
+    /**
+     * 征信
+     */
+    @TableField(exist = false)
+    private List<SysFile> credit;
+
+
+    /**
+     * 征信
+     */
+    @TableField(exist = false)
+    private List<SysFile> premisesPermit;
+
 }
