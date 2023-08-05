@@ -156,7 +156,7 @@ public class WxUserServiceImpl implements WxUserService {
         if (CollectionUtils.isNotEmpty(headimgurlFiles)) {
             SysFile sysFile =  headimgurlFiles.get(0);
             sysFileService.updateFileUrl(sysFile);
-            wxUser.setHeadimgurl(sysFile.getUrl());
+            wxUser.setHeadimgurlFile(sysFile);
         }
 
 

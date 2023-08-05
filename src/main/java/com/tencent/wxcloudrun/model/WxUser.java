@@ -210,4 +210,11 @@ public class WxUser implements Serializable {
     @TableField(exist = false)
     private List<SysFile> premisesPermit;
 
+
+    /**
+     * 头像
+     */
+    @TableField(exist = false)
+    private SysFile headimgurlFile;
+
 }
