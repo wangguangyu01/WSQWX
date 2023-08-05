@@ -205,7 +205,7 @@ public class WxUser implements Serializable {
 
 
     /**
-     * 征信
+     * 房本
      */
     @TableField(exist = false)
     private List<SysFile> premisesPermit;

@@ -150,6 +150,16 @@ public class WxUserServiceImpl implements WxUserService {
     }
 
     private void getWxUserFile(String openid, WxUser wxUser) throws Exception {
+
+        // 个人照片秀
+        List<SysFile> headimgurlFiles = sysFileService.queryFile(openid, 11);
+        if (CollectionUtils.isNotEmpty(headimgurlFiles)) {
+            SysFile sysFile =  headimgurlFiles.get(0);
+            sysFileService.updateFileUrl(sysFile);
+            wxUser.setHeadimgurl(sysFile.getUrl());
+        }
+
+
         // 个人照片秀
         List<SysFile> list = sysFileService.queryFile(openid, 4);
         List<SysFile> imagePaths = new ArrayList<>();

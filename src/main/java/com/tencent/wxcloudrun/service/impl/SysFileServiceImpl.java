@@ -46,6 +46,7 @@ public class SysFileServiceImpl implements SysFileService {
         LambdaQueryWrapper<SysFile> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysFile::getContentId, contentId);
         queryWrapper.eq(SysFile::getType, type);
+        queryWrapper.orderByDesc(SysFile::getCreateDate);
         return sysFileMapper.selectList(queryWrapper);
     }
 

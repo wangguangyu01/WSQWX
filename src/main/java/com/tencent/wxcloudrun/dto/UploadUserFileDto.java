@@ -32,6 +32,7 @@ public class UploadUserFileDto {
      *     8、行车证
      *     9、征信
      *     10、房本
+     *     11、微信头像
      */
     private Integer type;
 }
