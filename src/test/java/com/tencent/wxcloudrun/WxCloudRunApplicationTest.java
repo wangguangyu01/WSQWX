@@ -138,4 +138,13 @@ public class WxCloudRunApplicationTest {
         Assert.assertTrue(count >= 0);
     }
 
+
+
+    @Test
+    public void testSm4() throws Exception {
+        SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
+        String dd  = sm4.decryptStr("f9e6a7da85ff52b1dd041c170f8fc27d690ccd6cc59b3bffe22d2d684a39df19");
+        System.out.println(dd);
+    }
+
 }
