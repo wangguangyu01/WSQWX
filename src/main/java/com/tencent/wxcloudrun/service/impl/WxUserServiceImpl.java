@@ -91,18 +91,13 @@ public class WxUserServiceImpl implements WxUserService {
             if (!ObjectUtils.isEmpty(body)) {
                 UserOpenInfoDto userOpenInfoDto = JSONObject.parseObject(body, UserOpenInfoDto.class);
                 String openid = userOpenInfoDto.getOpenid();
-                SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
-                String decryptStr = sm4.encryptHex(openid,  CharsetUtil.CHARSET_UTF_8);
-                decryptStr = sm4.decryptStr(decryptStr);
-                if (StringUtils.isNotBlank(decryptStr)) {
-                    WxUser wxUser = wxUserMapper.selectById(decryptStr);
-                    if (!ObjectUtils.isEmpty(wxUser)) {
-                        map.put("openid", decryptStr);
-                        map.put("flag", true);
-                    } else {
-                        map.put("openid", decryptStr);
-                        map.put("flag", false);
-                    }
+                WxUser wxUser = wxUserMapper.selectById(openid);
+                if (!ObjectUtils.isEmpty(wxUser)) {
+                    map.put("openid", openid);
+                    map.put("flag", true);
+                } else {
+                    map.put("openid", openid);
+                    map.put("flag", false);
                 }
             }
         }
