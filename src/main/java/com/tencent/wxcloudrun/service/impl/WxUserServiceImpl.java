@@ -93,7 +93,7 @@ public class WxUserServiceImpl implements WxUserService {
                 String openid = userOpenInfoDto.getOpenid();
                 SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
                 String decryptStr = sm4.encryptHex(openid,  CharsetUtil.CHARSET_UTF_8);
-                sm4.decrypt(decryptStr);
+                decryptStr = sm4.decryptStr(decryptStr);
                 if (StringUtils.isNotBlank(decryptStr)) {
                     WxUser wxUser = wxUserMapper.selectById(decryptStr);
                     if (!ObjectUtils.isEmpty(wxUser)) {
