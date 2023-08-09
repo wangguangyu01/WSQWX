@@ -10,10 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.dao.CountersMapper;
 import com.tencent.wxcloudrun.dao.TSerialNumberMapper;
-import com.tencent.wxcloudrun.dto.FileRequestDto;
-import com.tencent.wxcloudrun.dto.FileResponseDto;
-import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
-import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
+import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.model.TSerialNumber;
 import com.tencent.wxcloudrun.model.WxUser;
@@ -21,8 +18,11 @@ import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
+import com.tencent.wxcloudrun.utils.MD5Utils;
 import com.tencent.wxcloudrun.utils.UUIDGenerator;
+import com.tencent.wxcloudrun.utils.XmlToStringUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,9 +39,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -145,6 +143,65 @@ public class WxCloudRunApplicationTest {
         SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
         String dd  = sm4.decryptStr("f9e6a7da85ff52b1dd041c170f8fc27d690ccd6cc59b3bffe22d2d684a39df19");
         System.out.println(dd);
+    }
+
+
+    @Test
+    public void testMap() throws Exception {
+        UnifiedorderDto unifiedorderDto = UnifiedorderDto
+                .builder()
+                .appid("wx638e212bbba9e7f7")
+                .attach("支付测试")
+                .body("JSAPI支付测试")
+                .mch_id("1649752154")
+                .nonce_str("1add1a30ac87aa2db72f57a2375d8fec")
+                .sign_type("MD5")
+                .notify_url("https://springboot-u4yq-39835-6-1317513730.sh.run.tcloudbase.com/placeOrder")
+                .openid("o0orR5Ky23-zyG74OInlL3QreR0s")
+                .out_trade_no("141565987755678")
+                .spbill_create_ip("14.23.150.211")
+                .total_fee("1")
+                .fee_type("CNY")
+                .trade_type("JSAPI")
+                .key("gundan7890321gundan7890321123456")
+                .build();
+        String xml = UnifiedorderDto.buildXml(unifiedorderDto);
+        System.out.println("xml--->" + xml);
+    }
+
+    @Test
+    public void xmlToMap() throws Exception {
+        String xml = "<xml><return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                "<return_msg><![CDATA[OK]]></return_msg>\n" +
+                "<result_code><![CDATA[SUCCESS]]></result_code>\n" +
+                "<mch_id><![CDATA[1649752154]]></mch_id>\n" +
+                "<appid><![CDATA[wx638e212bbba9e7f7]]></appid>\n" +
+                "<nonce_str><![CDATA[dP1CO3IigrlC5oSf]]></nonce_str>\n" +
+                "<sign><![CDATA[893D669003736C1EE4D803EF568FBA50]]></sign>\n" +
+                "<prepay_id><![CDATA[wx0800392700032189ceb0fbf88a5a930000]]></prepay_id>\n" +
+                "<trade_type><![CDATA[JSAPI]]></trade_type>\n" +
+                "</xml>";
+
+       Map<String,String> map = XmlToStringUtil.xmlToMap(xml);
+       System.out.println(map);
+    }
+
+
+    @Test
+    public void testMapSginPay() throws Exception {
+
+        TreeMap<String, Object> treeMap = new TreeMap<>();
+        treeMap.put("appId", "wx638e212bbba9e7f7");
+        treeMap.put("timeStamp", System.currentTimeMillis() / 1000);
+        treeMap.put("nonceStr", "bdfbdfbdfbdfbd");
+        treeMap.put("package", "prepay_id=wx0800392700032189ceb0fbf88a5a930000");
+        treeMap.put("signType", "MD5");
+        String signA = StringUtils.join(treeMap.entrySet(), "&");
+        signA+="&key=gundan7890321gundan7890321123456";
+        System.out.println(signA);
+        String sign = MD5Utils.encryptNoWithSalt(signA);
+        System.out.println(sign);
+
     }
 
 }

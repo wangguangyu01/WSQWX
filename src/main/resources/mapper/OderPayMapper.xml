@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.OderPayMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.OderPay">
+    <!--@mbg.generated-->
+    <!--@Table oder_pay-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="pay_type" jdbcType="INTEGER" property="payType" />
+    <result column="pay_body" jdbcType="VARCHAR" property="payBody" />
+    <result column="pay_attach" jdbcType="LONGVARCHAR" property="payAttach" />
+    <result column="pay_nonceStr" jdbcType="VARCHAR" property="payNoncestr" />
+    <result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
+    <result column="pay_success" jdbcType="BOOLEAN" property="paySuccess" />
+    <result column="pay_timeStamp" jdbcType="TIMESTAMP" property="payTimestamp" />
+    <result column="trade_create_time" jdbcType="TIMESTAMP" property="tradeCreateTime" />
+    <result column="trade_pay_time" jdbcType="TIMESTAMP" property="tradePayTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, trade_no, open_id, pay_type, pay_body, pay_attach, pay_nonceStr, prepay_id, pay_success, 
+    pay_timeStamp, trade_create_time, trade_pay_time
+  </sql>
+</mapper>

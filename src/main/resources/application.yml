@@ -74,6 +74,11 @@ weixin:
   appid: wx638e212bbba9e7f7
   env: prod-0gws2yp30d12fdb1
   url: https://api.weixin.qq.com/
+  #微信商户号
+  mchid: 1649752154
+  #微信支付安全api密钥
+  cert:
+    key: gundan7890321gundan7890321123456
 #数据加密的key
 slatKey: wx7290Wsqklollnk
 redisson:

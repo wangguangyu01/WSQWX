@@ -1,25 +1,79 @@
 package com.tencent.wxcloudrun.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.tencent.wxcloudrun.config.ApiResponse;
+import com.tencent.wxcloudrun.dto.*;
+import com.tencent.wxcloudrun.model.OderPay;
+import com.tencent.wxcloudrun.service.OderPayService;
+import com.tencent.wxcloudrun.service.PayService;
+import com.tencent.wxcloudrun.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.sax.SAXResult;
+import java.io.ByteArrayOutputStream;
+import java.util.Map;
 
 @RestController
 @Slf4j
 public class PayConttoller  {
 
+    @Autowired
+    private PayService payService;
 
-    @GetMapping("/placeOrder")
-    public ApiResponse placeOrder(HttpServletRequest request, HttpServletResponse response) {
-        log.info("placeOrder response---> {}", response);
-        return ApiResponse.ok();
+
+
+
+    @Autowired
+    private OderPayService oderPayService;
+
+
+
+    @PostMapping(value = "/notifyOrder", consumes = MediaType.APPLICATION_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
+    public String notifyOrder(@RequestBody XmlRequestDTO requestDTO) throws Exception {
+        log.info("notifyOrder request---> {}", requestDTO);
+        LambdaQueryWrapper<OderPay> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OderPay::getTradeNo, requestDTO.getOut_trade_no());
+        OderPay oderPay = oderPayService.getOne(queryWrapper);
+        if (!ObjectUtils.isEmpty(oderPay)) {
+            oderPay.setPaySuccess(2);
+            oderPay.setTransactionId(requestDTO.getTransaction_id());
+            oderPayService.updateById(oderPay);
+        }
+        XmlResponseDTO response = new XmlResponseDTO("SUCCESS", "OK");
+        return XmlResponseDTO.buildXml(response);
     }
+
+
+
+    @PostMapping("/api/placeOrder")
+    public ApiResponse placeOrder(@RequestBody PayOrderDo payOrderDo)  {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Map<String, Object> map = null;
+        try {
+            log.info("placeOrder payOrderDo ---> {}", payOrderDo);
+            IPUtil ipUtil = new IPUtil();
+            String ip  = ipUtil.getIP(request);
+            map = payService.unifiedOrder(payOrderDo.getOpenId(), payOrderDo.getPayType(), ip);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.ok(map);
+    }
+
+
+
+
 
 }
