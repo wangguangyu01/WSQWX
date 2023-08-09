@@ -121,7 +121,7 @@ public class PayServiceImpl implements PayService {
             treeMap.put("appId", weixinAppId);
             treeMap.put("timeStamp", timeStamp);
             treeMap.put("nonceStr", nonceStr);
-            treeMap.put("package", "prepay_id=" + prepay_id);
+            treeMap.put("package",  prepay_id);
             treeMap.put("signType", "MD5");
             String signA = StringUtils.join(treeMap.entrySet(), "&");
             signA += "&key=" + certKey;
