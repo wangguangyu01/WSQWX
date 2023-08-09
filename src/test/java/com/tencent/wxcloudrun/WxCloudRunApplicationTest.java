@@ -204,4 +204,15 @@ public class WxCloudRunApplicationTest {
 
     }
 
+    @Test
+    public void testTime() {
+//        Long timeStamp = System.currentTimeMillis() / 1000;
+//        Date date = new Date(timeStamp * 1000);
+//        System.out.println(DateUtils.format(date, DateUtils.DATE_TIME_PATTERN) );
+
+        Date date = DateUtils.timestampTransitionDate(1691594943L);
+        String dateStr = DateUtils.format(date, DateUtils.DATE_TIME_PATTERN);
+        System.out.println(dateStr);
+    }
+
 }

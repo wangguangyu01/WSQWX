@@ -9,10 +9,7 @@ import com.tencent.wxcloudrun.model.SysConfig;
 import com.tencent.wxcloudrun.service.OderPayService;
 import com.tencent.wxcloudrun.service.PayService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
-import com.tencent.wxcloudrun.utils.JacksonUtils;
-import com.tencent.wxcloudrun.utils.MD5Utils;
-import com.tencent.wxcloudrun.utils.NonceStrUtil;
-import com.tencent.wxcloudrun.utils.XmlToStringUtil;
+import com.tencent.wxcloudrun.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +111,7 @@ public class PayServiceImpl implements PayService {
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
         String xmlResponse = restTemplate.postForObject(unifiedOrderUrl, new HttpEntity<>(xml, httpHeaders), String.class);
         log.info("unifiedOrder xmlResponse --->{}", xmlResponse);
+        Date  currenttime = new  Date();
         Long timeStamp = System.currentTimeMillis() / 1000;
         Map<String, String> map = XmlToStringUtil.xmlToMap(xmlResponse);
         if (StringUtils.equals((String) map.get("return_code"), "SUCCESS")
@@ -130,6 +128,7 @@ public class PayServiceImpl implements PayService {
             String sgin = MD5Utils.encryptNoWithSalt(signA);
             treeMap.put("paySign", sgin);
             treeMap.remove("appId");
+            Date date = DateUtils.timestampTransitionDate(timeStamp);
             OderPay oderPay = OderPay.builder().payAttach(attach)
                     .payBody(body)
                     .payNoncestr(nonceStr)
@@ -139,7 +138,7 @@ public class PayServiceImpl implements PayService {
                     .openId(openId)
                     .prepayId("prepay_id" + prepay_id)
                     .tradeNo(out_trade_no)
-                    .tradeCreateTime(new Date(timeStamp * 1000))
+                    .tradeCreateTime(date)
                     .build();
             oderPayService.save(oderPay);
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));

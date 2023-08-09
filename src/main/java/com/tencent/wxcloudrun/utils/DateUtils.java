@@ -321,6 +321,23 @@ public class DateUtils {
     }
 
 
+    /**
+     * 根据秒级别的时间戳转换成时间
+     * @param timestamp
+     * @return
+     */
+    public static Date timestampTransitionDate(Long timestamp) {
+        // 将秒级时间戳转换为 Instant 对象
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        // 将 Instant 对象转换为 LocalDateTime 对象
+        LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateTime.format(dateTimeFormatter);
+        Date date = parseDateTime(formattedDate, DateUtils.DATE_TIME_PATTERN);
+        return date;
+    }
+
+
     public static void main(String[] args) throws Exception {
        /* Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());

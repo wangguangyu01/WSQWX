@@ -201,7 +201,11 @@ public class UnifiedorderDto {
                  continue;
             }
             stringBuffer.append("<").append(entry.getKey()).append(">");
-            stringBuffer.append("<![CDATA[").append(entry.getValue()).append("]]>");
+            if (StringUtils.equals("total_fee", entry.getKey())) {
+                stringBuffer.append(entry.getValue());
+            } else {
+                stringBuffer.append("<![CDATA[").append(entry.getValue()).append("]]>");
+            }
             stringBuffer.append("</").append(entry.getKey()).append(">");
         }
         stringBuffer.append("</xml>");
