@@ -113,6 +113,7 @@ public class PayServiceImpl implements PayService {
         restTemplate.getMessageConverters().add(new FastJsonHttpMessageConverter());
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
         String xmlResponse = restTemplate.postForObject(unifiedOrderUrl, new HttpEntity<>(xml, httpHeaders), String.class);
+        log.info("unifiedOrder xmlResponse --->{}", xmlResponse);
         Long timeStamp = System.currentTimeMillis() / 1000;
         Map<String, String> map = XmlToStringUtil.xmlToMap(xmlResponse);
         if (StringUtils.equals((String) map.get("return_code"), "SUCCESS")

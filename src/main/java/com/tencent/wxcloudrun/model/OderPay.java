@@ -68,10 +68,9 @@ public class OderPay {
 
     /**
      * 支付状态
-     * 1：下单；
+     * 1：下单成功；
      * 2：支付成功
-     * 3：下单失败
-     * 4：支付失败
+     * 3：支付失败
      */
     @TableField(value = "pay_success")
     private int paySuccess;
