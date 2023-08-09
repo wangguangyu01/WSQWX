@@ -139,7 +139,7 @@ public class PayServiceImpl implements PayService {
                     .openId(openId)
                     .prepayId("prepay_id" + prepay_id)
                     .tradeNo(out_trade_no)
-                    .tradeCreateTime(new Date(timeStamp))
+                    .tradeCreateTime(new Date(timeStamp * 1000))
                     .build();
             oderPayService.save(oderPay);
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));
