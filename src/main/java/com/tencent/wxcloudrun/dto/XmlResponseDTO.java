@@ -46,7 +46,7 @@ public class XmlResponseDTO {
         }
         stringBuffer.append("</xml>");
         String xml = stringBuffer.toString();
-        log.info("UnifiedorderDto XML ---》{}",  xml);
+        log.info("XmlResponseDTO XML ---》{}",  xml);
         return xml;
     }
 }
