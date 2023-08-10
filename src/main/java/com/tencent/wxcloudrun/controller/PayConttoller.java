@@ -25,6 +25,8 @@ import javax.xml.transform.sax.SAXResult;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.TEXT_XML_VALUE;
+
 @RestController
 @Slf4j
 public class PayConttoller  {
@@ -40,18 +42,23 @@ public class PayConttoller  {
 
 
 
-    @PostMapping(value = "/notifyOrder", consumes = MediaType.APPLICATION_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
     public String notifyOrder(@RequestBody XmlRequestDTO requestDTO) throws Exception {
-        log.info("notifyOrder request---> {}", requestDTO);
-        LambdaQueryWrapper<OderPay> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(OderPay::getTradeNo, requestDTO.getOut_trade_no());
-        OderPay oderPay = oderPayService.getOne(queryWrapper);
-        if (!ObjectUtils.isEmpty(oderPay)) {
-            oderPay.setPaySuccess(2);
-            oderPay.setTransactionId(requestDTO.getTransaction_id());
-            oderPayService.updateById(oderPay);
-        }
         XmlResponseDTO response = new XmlResponseDTO("SUCCESS", "OK");
+        try {
+            log.info("notifyOrder request---> {}", requestDTO);
+            LambdaQueryWrapper<OderPay> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(OderPay::getTradeNo, requestDTO.getOut_trade_no());
+            OderPay oderPay = oderPayService.getOne(queryWrapper);
+            if (!ObjectUtils.isEmpty(oderPay)) {
+                oderPay.setPaySuccess(2);
+                oderPay.setTransactionId(requestDTO.getTransaction_id());
+                oderPayService.updateById(oderPay);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return XmlResponseDTO.buildXml(response);
     }
 
