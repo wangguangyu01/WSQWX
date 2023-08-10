@@ -217,4 +217,10 @@ public class WxUser implements Serializable {
     @TableField(exist = false)
     private SysFile headimgurlFile;
 
+
+    /**
+     * 是否认证
+     */
+    private  String authentication;
+
 }

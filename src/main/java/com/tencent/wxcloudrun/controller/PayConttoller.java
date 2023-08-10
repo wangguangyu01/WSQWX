@@ -7,8 +7,10 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.OderPay;
+import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.OderPayService;
 import com.tencent.wxcloudrun.service.PayService;
+import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class PayConttoller  {
     @Autowired
     private OderPayService oderPayService;
 
+    @Autowired
+    private WxUserService wxUserService;
+
 
 
     @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
@@ -54,6 +59,9 @@ public class PayConttoller  {
                 oderPay.setPaySuccess(2);
                 oderPay.setTransactionId(requestDTO.getTransaction_id());
                 oderPayService.updateById(oderPay);
+                WxUser wxUser = wxUserService.queryWxUserOne(oderPay.getOpenId());
+                wxUser.setAuthentication("1");
+                wxUserService.updateWxUser(wxUser);
             }
         } catch (Exception e) {
             e.printStackTrace();
