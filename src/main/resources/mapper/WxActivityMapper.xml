@@ -6,6 +6,7 @@
     <!--@Table wx_activity-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="trade_no" jdbcType="VARCHAR" property="tradeNo"/>
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
     <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
@@ -17,7 +18,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, open_id, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid, 
+    id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,
     create_time
   </sql>
 </mapper>

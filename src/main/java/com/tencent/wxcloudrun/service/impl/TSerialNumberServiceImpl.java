@@ -12,6 +12,9 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.model.TSerialNumber;
@@ -21,6 +24,8 @@ import org.springframework.util.ObjectUtils;
 
 @Service
 public class TSerialNumberServiceImpl extends ServiceImpl<TSerialNumberMapper, TSerialNumber> implements TSerialNumberService{
+
+    private static final AtomicLong atomicLong = new AtomicLong(0);
 
     @Autowired
     private TSerialNumberMapper tSerialNumberMapper;
@@ -33,13 +38,14 @@ public class TSerialNumberServiceImpl extends ServiceImpl<TSerialNumberMapper, T
 
     @Override
     public String createSerialNumber() {
+
+        String serialNumberStr = "";
         Date date = new Date();
         String dateStr = DateUtils.format(date, DateUtils.DATE_PATTERN);
         Date date1 = DateUtils.parseDate(dateStr, DateUtils.DATE_PATTERN);
         LambdaQueryWrapper<TSerialNumber> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TSerialNumber::getUpdateDate, date1);
         List<TSerialNumber> tSerialNumbers = tSerialNumberMapper.selectList(queryWrapper);
-
         TSerialNumber tSerialNumber = null;
         if (CollectionUtils.isEmpty(tSerialNumbers)) {
             tSerialNumber = new TSerialNumber();
@@ -58,21 +64,25 @@ public class TSerialNumberServiceImpl extends ServiceImpl<TSerialNumberMapper, T
             }
             redisTemplate.expire("tSerialNumber_key_"+dateStr, 24, TimeUnit.HOURS);
         } catch (Exception e) {
-            Long serialNumber = tSerialNumber.getSerialNumber();
+            long serialNumber = tSerialNumber.getSerialNumber();
             if (!ObjectUtils.isEmpty(serialNumber)) {
                 incrementAndGet = serialNumber + 1;
+            } else {
+                incrementAndGet = atomicLong.incrementAndGet();
             }
+        } finally {
+            tSerialNumber.setSerialNumber(incrementAndGet);
+            tSerialNumber.setUpdateDate(new Date());
+            if (tSerialNumber.getId() == null) {
+                tSerialNumberMapper.insert(tSerialNumber);
+            } else {
+                tSerialNumberMapper.updateById(tSerialNumber);
+            }
+            String incrementStr = String.format("%03d", incrementAndGet);
+            serialNumberStr = dateStr + incrementStr;
+            serialNumberStr = StringUtils.replaceAll(serialNumberStr, "-", "");
         }
-        tSerialNumber.setSerialNumber(incrementAndGet);
-        tSerialNumber.setUpdateDate(new Date());
-        if (tSerialNumber.getId() == null) {
-            tSerialNumberMapper.insert(tSerialNumber);
-        } else {
-            tSerialNumberMapper.updateById(tSerialNumber);
-        }
-        String incrementStr = String.format("%03d", incrementAndGet);
-        String serialNumber = dateStr + incrementStr;
-        serialNumber = StringUtils.replaceAll(serialNumber, "-", "");
-        return serialNumber;
+
+        return serialNumberStr;
     }
 }

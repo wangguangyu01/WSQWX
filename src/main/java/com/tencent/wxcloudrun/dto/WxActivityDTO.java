@@ -9,4 +9,5 @@ import java.io.Serializable;
 public class WxActivityDTO extends WxActivity implements Serializable {
 
 
+    private String requestIp;
 }

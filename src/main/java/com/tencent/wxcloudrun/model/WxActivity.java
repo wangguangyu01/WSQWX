@@ -37,6 +37,10 @@ public class WxActivity {
     @TableField(value = "nickname")
     private String nickname;
 
+
+    @TableField(value = "trade_no")
+    private String tradeNo;
+
     /**
      * 微信号
      */

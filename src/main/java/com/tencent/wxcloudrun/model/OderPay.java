@@ -95,4 +95,7 @@ public class OderPay {
 
     @TableField(value = "transaction_id")
     private String transactionId;
+
+    @TableField(value = "price")
+    private String  price;
 }

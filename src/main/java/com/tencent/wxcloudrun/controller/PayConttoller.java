@@ -80,7 +80,7 @@ public class PayConttoller  {
             log.info("placeOrder payOrderDo ---> {}", payOrderDo);
             IPUtil ipUtil = new IPUtil();
             String ip  = ipUtil.getIP(request);
-            map = payService.unifiedOrder(payOrderDo.getOpenId(), payOrderDo.getPayType(), ip);
+            map = payService.unifiedOrder(payOrderDo.getOpenId(), payOrderDo.getPayType(), ip, null);
         } catch (Exception e) {
             e.printStackTrace();
         }

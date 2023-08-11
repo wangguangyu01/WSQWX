@@ -210,9 +210,12 @@ public class WxCloudRunApplicationTest {
 //        Date date = new Date(timeStamp * 1000);
 //        System.out.println(DateUtils.format(date, DateUtils.DATE_TIME_PATTERN) );
 
-        Date date = DateUtils.timestampTransitionDate(1691594943L);
-        String dateStr = DateUtils.format(date, DateUtils.DATE_TIME_PATTERN);
-        System.out.println(dateStr);
+//        Date date = DateUtils.timestampTransitionDate(1691594943L);
+//        String dateStr = DateUtils.format(date, DateUtils.DATE_TIME_PATTERN);
+//        System.out.println(dateStr);
+        Date date = new Date();
+        String dd = DateUtils.format(date, "yyyyMMddHHmmssSSS");
+        System.out.println(dd);
     }
 
 }

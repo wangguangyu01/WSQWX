@@ -2,16 +2,22 @@ package com.tencent.wxcloudrun.service.impl;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tencent.wxcloudrun.dao.BlogContentMapper;
 import com.tencent.wxcloudrun.dao.SysConfigMapper;
+import com.tencent.wxcloudrun.dao.WxActivityMapper;
 import com.tencent.wxcloudrun.dto.UnifiedorderDto;
+import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.OderPay;
 import com.tencent.wxcloudrun.model.SysConfig;
+import com.tencent.wxcloudrun.model.WxActivity;
 import com.tencent.wxcloudrun.service.OderPayService;
 import com.tencent.wxcloudrun.service.PayService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.utils.*;
+import jodd.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,10 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -55,6 +58,14 @@ public class PayServiceImpl implements PayService {
     private OderPayService oderPayService;
 
 
+    @Autowired
+    private WxActivityMapper wxActivityMapper;
+
+
+    @Autowired
+    private BlogContentMapper blogContentMapper;
+
+
     private String notify_url = "https://springboot-u4yq-39835-6-1317513730.sh.run.tcloudbase.com/notifyOrder";
 
 
@@ -71,11 +82,11 @@ public class PayServiceImpl implements PayService {
      * @return
      */
     @Override
-    public Map<String, Object> unifiedOrder(String openId, int payType, String requestIp) throws Exception {
+    public Map<String, Object> unifiedOrder(String openId, int payType, String requestIp,  String activityUuid) throws Exception {
         String body = "大卫维尼-缴费";
         String priceStr = "";
         String nonceStr = NonceStrUtil.generateNonceStr();
-        String out_trade_no = createTradeNo(nonceStr);
+        String out_trade_no = DateUtils.format(new Date(), "yyyyMMddHHmmssSSS");
         String attach = "大卫维尼-缴费";
         if (payType == 1) {
             // 查询配置中的会员费用
@@ -85,6 +96,14 @@ public class PayServiceImpl implements PayService {
             priceStr = sysConfig.getParamValue();
             body = "大卫维尼-会员充值";
             attach = "会员充值";
+        } else if (payType == 2) {
+            BlogContent blogContent = blogContentMapper.selectById(activityUuid);
+             if (Objects.nonNull(blogContent)) {
+                 priceStr = String.valueOf(blogContent.getPrice());
+                 body = "大卫维尼-活动报名费用";
+                 attach = "参加活动名称: "+blogContent.getTitle();
+             }
+
         }
         UnifiedorderDto unifiedorderDto = UnifiedorderDto
                 .builder()
@@ -138,14 +157,31 @@ public class PayServiceImpl implements PayService {
                     .openId(openId)
                     .prepayId("prepay_id=" + prepay_id)
                     .tradeNo(out_trade_no)
+                    .price(unifiedorderDto.getTotal_fee())
                     .tradeCreateTime(new Date())
                     .build();
             oderPayService.save(oderPay);
+            if (StringUtils.isNotBlank(activityUuid) && payType == 2) {
+                LambdaQueryWrapper<WxActivity> queryWrapper = new LambdaQueryWrapper();
+                queryWrapper.eq(WxActivity::getOpenId, openId);
+                queryWrapper.eq(WxActivity::getActivityUuid, activityUuid);
+                WxActivity wxActivity = wxActivityMapper.selectOne(queryWrapper);
+                wxActivity.setTradeNo(out_trade_no);
+                wxActivityMapper.updateById(wxActivity);
+            }
             treeMap.put("package", prepay_id);
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));
             return treeMap;
         }
         return null;
+    }
+
+
+    @Override
+    public OderPay queryOderPay(String tradeNo) {
+        LambdaQueryWrapper<OderPay> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OderPay::getTradeNo, tradeNo);
+        return oderPayService.getOne(queryWrapper);
     }
 
 

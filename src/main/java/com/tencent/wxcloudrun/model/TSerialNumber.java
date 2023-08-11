@@ -26,7 +26,7 @@ public class TSerialNumber {
      * 生成的编号
      */
     @TableField(value = "serial_number")
-    private Long serialNumber;
+    private long serialNumber;
 
     /**
      * 编号更新时间
