@@ -39,14 +39,18 @@ public class WxActivityController {
                     || StringUtils.isBlank(wxActivityDTO.getPhone()))  {
                 return ApiResponse.error("缺少报名的条件");
             }
-            log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxActivityDTO));
+            log.info("addWxActivity wxActivityDTO--->{}", JSON.toJSONString(wxActivityDTO));
             WxActivity wxActivity = wxActivityService.queryWxUserOne(wxActivityDTO.getOpenId(),
                     wxActivityDTO.getActivityUuid());
-            OderPay oderPay = payService.queryOderPay(wxActivity.getTradeNo());
-            if (ObjectUtils.isEmpty(wxActivity) ||  oderPay.getPaySuccess() != 2 ) {
+            if (ObjectUtils.isEmpty(wxActivity)) {
                 wxActivityService.activityOrder(wxActivityDTO);
-            } else if (!ObjectUtils.isEmpty(wxActivity) &&  oderPay.getPaySuccess() == 2 ) {
-                ApiResponse.ok("您已经成功报名");
+            } else  {
+                OderPay oderPay = payService.queryOderPay(wxActivity.getTradeNo());
+                if (oderPay.getPaySuccess() == 2) {
+                    ApiResponse.ok("您已经成功报名");
+                } else {
+                    ApiResponse.error("报名失败联系管理");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
