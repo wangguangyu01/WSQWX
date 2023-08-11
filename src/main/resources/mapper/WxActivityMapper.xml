@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.WxActivityMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxActivity">
+    <!--@mbg.generated-->
+    <!--@Table wx_activity-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="emergency_phone" jdbcType="VARCHAR" property="emergencyPhone" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="card" jdbcType="VARCHAR" property="card" />
+    <result column="activity_uuid" jdbcType="VARCHAR" property="activityUuid" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, open_id, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid, 
+    create_time
+  </sql>
+</mapper>

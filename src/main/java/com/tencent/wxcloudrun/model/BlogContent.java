@@ -138,4 +138,8 @@ public class BlogContent {
      */
     @TableField(exist = false)
     private  String moneyQRCode;
+
+
+    @TableField(value = "price")
+    private Long price;
 }
