@@ -14,11 +14,12 @@
         <result column="sex" jdbcType="VARCHAR" property="sex"/>
         <result column="card" jdbcType="VARCHAR" property="card"/>
         <result column="activity_uuid" jdbcType="VARCHAR" property="activityUuid"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,
+        id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,address,
         create_time
     </sql>
 
@@ -33,6 +34,7 @@
                wx_activity.sex,
                wx_activity.card,
                wx_activity.activity_uuid,
+               wx_activity.address,
                wx_activity.create_time
         from wx_activity,
              oder_pay

@@ -82,4 +82,7 @@ public class WxActivity {
      */
     @TableField(value = "create_time")
     private Date createTime;
+
+    @TableField(value = "address")
+    private String address;
 }
