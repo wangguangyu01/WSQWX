@@ -216,6 +216,8 @@ public class WxCloudRunApplicationTest {
         Date date = new Date();
         String dd = DateUtils.format(date, "yyyyMMddHHmmssSSS");
         System.out.println(dd);
+        String ddd = StringUtils.substring("prepay_id=wx120838347851140dd1637ed89cfb420000", StringUtils.indexOf("prepay_id=wx120838347851140dd1637ed89cfb420000", "=")+1);
+        System.out.println(ddd);
     }
 
 }
