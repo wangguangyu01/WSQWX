@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tencent.wxcloudrun.dao.WxActivityMapper">
-  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxActivity">
-    <!--@mbg.generated-->
-    <!--@Table wx_activity-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="open_id" jdbcType="VARCHAR" property="openId" />
-    <result column="trade_no" jdbcType="VARCHAR" property="tradeNo"/>
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
-    <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-    <result column="emergency_phone" jdbcType="VARCHAR" property="emergencyPhone" />
-    <result column="sex" jdbcType="VARCHAR" property="sex" />
-    <result column="card" jdbcType="VARCHAR" property="card" />
-    <result column="activity_uuid" jdbcType="VARCHAR" property="activityUuid" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,
-    create_time
-  </sql>
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxActivity">
+        <!--@mbg.generated-->
+        <!--@Table wx_activity-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="trade_no" jdbcType="VARCHAR" property="tradeNo"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="wx_number" jdbcType="VARCHAR" property="wxNumber"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="emergency_phone" jdbcType="VARCHAR" property="emergencyPhone"/>
+        <result column="sex" jdbcType="VARCHAR" property="sex"/>
+        <result column="card" jdbcType="VARCHAR" property="card"/>
+        <result column="activity_uuid" jdbcType="VARCHAR" property="activityUuid"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,
+        create_time
+    </sql>
 
-  <select id="queryWxActivityList" resultMap="BaseResultMap">
-       select <include refid="Base_Column_List"/> from wx_activity, oder_pay
-       where wx_activity.trade_no = oder_pay.trade_no
-       and  activity_uuid = #{activityUuid}
-       and oder_pay.pay_success = '2'
-       order by create_time desc
+    <select id="queryWxActivityList" resultMap="BaseResultMap">
+        select wx_activity.trade_no,
+               wx_activity.id,
+               wx_activity.open_id,
+               wx_activity.nickname,
+               wx_activity.wx_number,
+               wx_activity.phone,
+               wx_activity.emergency_phone,
+               wx_activity.sex,
+               wx_activity.card,
+               wx_activity.activity_uuid,
+               wx_activity.create_time
+        from wx_activity,
+             oder_pay
+        where wx_activity.trade_no = oder_pay.trade_no
+          and activity_uuid = #{activityUuid}
+          and oder_pay.pay_success = '2'
+        order by create_time desc
     </select>
 </mapper>
