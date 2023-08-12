@@ -61,7 +61,7 @@ public class WxActivityController {
             } else  {
                 OderPay oderPay = payService.queryOderPay(wxActivity.getTradeNo());
                 if (oderPay.getPaySuccess() == 2) {
-                    ApiResponse.ok("您已经成功报名");
+                    ApiResponse.error("您已经成功报名");
                 } else if (oderPay.getPaySuccess() == 1) {
                     TreeMap<String, Object> treeMap = new TreeMap<>();
                     treeMap.put("appId", weixinAppId);
