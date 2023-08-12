@@ -62,4 +62,9 @@ public class WxActivityServiceImpl extends ServiceImpl<WxActivityMapper, WxActiv
         int count = baseMapper.selectCount(queryWrapper);
         return count;
     }
+
+    @Override
+    public List<WxActivity> queryWxActivityList(String activityUuid) {
+        return baseMapper.queryWxActivityList(activityUuid);
+    }
 }

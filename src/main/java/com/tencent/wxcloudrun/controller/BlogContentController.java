@@ -38,6 +38,7 @@ public class BlogContentController {
     final AttachmentService attachmentService;
 
 
+
     public BlogContentController(@Autowired BlogContentService blogContentService,
                                  @Autowired SysFileService sysFileService,
                                  @Autowired AttachmentService attachmentService) {
@@ -91,6 +92,7 @@ public class BlogContentController {
         } else {
             blogContent.setMoneyQRCode("");
         }
+
         return ApiResponse.ok(blogContent);
     }
 

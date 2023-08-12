@@ -21,4 +21,12 @@
     id, open_id, trade_no, nickname, wx_number, phone, emergency_phone, sex, card, activity_uuid,
     create_time
   </sql>
+
+  <select id="queryWxActivityList" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List"/> from wx_activity, oder_pay
+       where wx_activity.trade_no = oder_pay.trade_no
+       and  activity_uuid = #{activityUuid}
+       and oder_pay.pay_success = '2'
+       order by create_time desc
+    </select>
 </mapper>

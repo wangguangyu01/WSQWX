@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -85,6 +83,16 @@ public class WxActivityController {
             e.printStackTrace();
         }
         return ApiResponse.error("添加失败");
+    }
+
+
+    @PostMapping(value = "/api/queryWxActivity")
+    public ApiResponse queryWxActivity(@RequestBody WxActivityDTO wxActivityDTO) {
+        if (StringUtils.isBlank(wxActivityDTO.getActivityUuid())) {
+            return ApiResponse.ok(new ArrayList<>());
+        }
+        List<WxActivity> list = wxActivityService.queryWxActivityList(wxActivityDTO.getActivityUuid());
+        return ApiResponse.ok(list);
     }
 
 }

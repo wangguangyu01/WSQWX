@@ -4,7 +4,9 @@ import com.tencent.wxcloudrun.dto.WxActivityDTO;
 import com.tencent.wxcloudrun.model.WxActivity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tencent.wxcloudrun.model.WxUser;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface WxActivityService extends IService<WxActivity>{
@@ -34,4 +36,12 @@ public interface WxActivityService extends IService<WxActivity>{
      * @return
      */
     int queryPhoneCount(String phone, String activityUuid);
+
+
+    /**
+     * 根据活动uuid查询报名人
+     * @param activityUuid
+     * @return
+     */
+    List<WxActivity> queryWxActivityList(String activityUuid);
 }
