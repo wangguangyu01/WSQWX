@@ -170,6 +170,7 @@ public class PayServiceImpl implements PayService {
                 wxActivityMapper.updateById(wxActivity);
             }
             treeMap.put("package", prepay_id);
+            treeMap.put("price", priceStr);
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));
             return treeMap;
         }
