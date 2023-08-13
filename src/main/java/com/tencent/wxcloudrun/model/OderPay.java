@@ -38,6 +38,7 @@ public class OderPay {
      * 支付类型
      * 1：会员支付
      * 2：活动支付
+     * 3:普通会员浏览资料费用
      */
     @TableField(value = "pay_type")
     private Integer payType;

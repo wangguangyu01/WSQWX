@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.WxBrowsingUsersMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxBrowsingUsers">
+    <!--@mbg.generated-->
+    <!--@Table wx_browsing_users-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="login_open_id" jdbcType="VARCHAR" property="loginOpenId" />
+    <result column="browsing_users_openid" jdbcType="VARCHAR" property="browsingUsersOpenid" />
+    <result column="browsing_type" jdbcType="VARCHAR" property="browsingType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, login_open_id, browsing_users_openid, browsing_type, create_time
+  </sql>
+</mapper>

@@ -10,6 +10,7 @@ import com.tencent.wxcloudrun.model.WxActivity;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.PayService;
 import com.tencent.wxcloudrun.service.WxActivityService;
+import com.tencent.wxcloudrun.utils.IPUtil;
 import com.tencent.wxcloudrun.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
@@ -49,9 +53,18 @@ public class WxActivityController {
                     || StringUtils.isBlank(wxActivityDTO.getPhone()))  {
                 return ApiResponse.error("缺少报名的条件");
             }
+
             log.info("addWxActivity wxActivityDTO--->{}", JSON.toJSONString(wxActivityDTO));
+
+            // 设置i感情ip
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            IPUtil ipUtil = new IPUtil();
+            String ip  = ipUtil.getIP(request);
+            wxActivityDTO.setRequestIp(ip);
+
             WxActivity wxActivity = wxActivityService.queryWxUserOne(wxActivityDTO.getOpenId(),
                     wxActivityDTO.getActivityUuid());
+
             Map<String, Object> map = new HashMap<>();
             if (ObjectUtils.isEmpty(wxActivity)) {
                 map = wxActivityService.activityOrder(wxActivityDTO);

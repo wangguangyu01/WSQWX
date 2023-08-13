@@ -2,16 +2,21 @@ package com.tencent.wxcloudrun.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.dto.WxUserCodeDto;
 import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
+import com.tencent.wxcloudrun.model.OderPay;
+import com.tencent.wxcloudrun.model.WxBrowsingUsers;
+import com.tencent.wxcloudrun.model.WxPersonalBrowse;
 import com.tencent.wxcloudrun.model.WxUser;
-import com.tencent.wxcloudrun.service.TSerialNumberService;
-import com.tencent.wxcloudrun.service.WxUserService;
+import com.tencent.wxcloudrun.service.*;
+import com.tencent.wxcloudrun.vo.WxUserPowerVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +44,15 @@ public class WxUserController {
     @Autowired
     private TSerialNumberService tSerialNumberService;
 
+    @Autowired
+    private WxBrowsingUsersService wxBrowsingUsersService;
+
+
+    @Autowired
+    private WxPersonalBrowseService wxPersonalBrowseService;
+
+    @Autowired
+    private OderPayService oderPayService;
 
 
     @PostMapping(value = "/api/checkWxUser")
@@ -46,17 +62,16 @@ public class WxUserController {
     }
 
 
-
     @PostMapping(value = "/api/addWxUser")
     public ApiResponse addWxUser(@RequestBody WxUserDto wxUserDto) {
         try {
-            if (ObjectUtils.isEmpty(wxUserDto))  {
+            if (ObjectUtils.isEmpty(wxUserDto)) {
                 return ApiResponse.error("缺少注册用户信息");
             }
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
             WxUser wxUser = new WxUser();
             BeanUtils.copyProperties(wxUserDto, wxUser);
-            wxUser.setApprove("待审核");
+            wxUser.setApprove("0");
             WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
             int count = wxUserService.queryPhoneCount(wxUserDto.getPhone());
             if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
@@ -79,6 +94,7 @@ public class WxUserController {
 
     /**
      * 注册人员信息
+     *
      * @param wxUserPageParamDto
      * @return
      */
@@ -96,9 +112,9 @@ public class WxUserController {
     }
 
 
-
     /**
      * 注册人员信息
+     *
      * @param userOpenInfoDto
      * @return
      */
@@ -107,16 +123,18 @@ public class WxUserController {
         try {
 
             log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(userOpenInfoDto));
-            if (ObjectUtils.isEmpty(userOpenInfoDto)) {
+            if (ObjectUtils.isEmpty(userOpenInfoDto)
+                    || StringUtils.isBlank(userOpenInfoDto.getOpenid())
+                    || StringUtils.isBlank(userOpenInfoDto.getLoginOpenId())) {
                 return ApiResponse.error("缺少参数");
             }
-            WxUser wxUserOne = new WxUser();
+            WxUser wxUserOne = null;
             int openIdCount = 0;
             if (StringUtils.isNotBlank(userOpenInfoDto.getOpenid())) {
-                 openIdCount = wxUserService.queryCount(userOpenInfoDto.getOpenid());
-                 if (openIdCount != 0) {
-                     wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
-                 }
+                openIdCount = wxUserService.queryCount(userOpenInfoDto.getOpenid());
+                if (openIdCount != 0) {
+                    wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+                }
             }
 
             if (openIdCount == 0 && StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
@@ -129,11 +147,90 @@ public class WxUserController {
             if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
                 wxUserOne.setWeight("-");
             }
+            // 查询登录用户
+            WxUser wxUser = wxUserService.queryWxUserOne(userOpenInfoDto.getLoginOpenId());
+            if (StringUtils.equals(userOpenInfoDto.getLoginOpenId(), userOpenInfoDto.getOpenid())) {
+                wxUserOne.setShowWxNumber(true);
+                wxUserOne.setShowbutton(false);
+            } else {
+                if (!ObjectUtils.isEmpty(wxUser) && StringUtils.equals(wxUser.getApprove(), "1")) {
+                    // 如果审核通过了，查询浏览的用户是否包含该浏览的用户
+                    LambdaQueryWrapper<WxBrowsingUsers> usersLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    usersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
+                    // 根据登录用户查询浏览的人数
+                    List<WxBrowsingUsers> wxBrowsingUsers = wxBrowsingUsersService.list(usersLambdaQueryWrapper);
+                    int updateCount = 0;
+                    if (CollectionUtils.isNotEmpty(wxBrowsingUsers)) {
+                        for (int i = 0; i < wxBrowsingUsers.size(); i++) {
+                            if (!StringUtils.equals(wxBrowsingUsers.get(i).getBrowsingUsersOpenid(),
+                                    userOpenInfoDto.getOpenid())) {
+                                updateCount++;
+                                continue;
+                            } else {
+                                usersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, userOpenInfoDto.getOpenid());
+                                WxBrowsingUsers wxBrowsingUsersOneObj = wxBrowsingUsersService.getOne(usersLambdaQueryWrapper);
+                                if (!ObjectUtils.isEmpty(wxBrowsingUsersOneObj)) {
+                                    if (StringUtils.equals(wxBrowsingUsersOneObj.getBrowsingType(), "2")
+                                            || StringUtils.equals(wxBrowsingUsersOneObj.getBrowsingType(), "1")) {
+                                        wxUserOne.setShowWxNumber(true);
+                                        wxUserOne.setShowbutton(false);
+                                    } else {
+                                        wxUserOne.setShowWxNumber(false);
+                                        wxUserOne.setShowbutton(true);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // 如果没有浏览记录才会添加新的记录
+                    if (updateCount == CollectionUtils.size(wxBrowsingUsers)) {
+                        WxBrowsingUsers wxBrowsingUsersSave = WxBrowsingUsers.builder()
+                                .browsingUsersOpenid(userOpenInfoDto.getOpenid())
+                                .browsingType("0")
+                                .loginOpenId(userOpenInfoDto.getLoginOpenId())
+                                .createTime(new Date())
+                                .build();
+                        wxBrowsingUsersService.save(wxBrowsingUsersSave);
+                    }
+                } else {
+                    wxUserOne.setShowWxNumber(false);
+                    wxUserOne.setShowbutton(false);
+                }
+            }
             return ApiResponse.ok(wxUserOne);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ApiResponse.error("数据获取失败");
     }
+
+
+    /**
+     * 注册人员信息
+     *
+     * @param userOpenInfoDto
+     * @return
+     */
+    @PostMapping(value = "/api/showWxNumberClick")
+    public ApiResponse showWxNumberClick(@RequestBody UserOpenInfoDto userOpenInfoDto) {
+        try {
+            log.info("showWxNumberClick userOpenInfoDto--->{}", JSON.toJSONString(userOpenInfoDto));
+            LambdaQueryWrapper<WxBrowsingUsers> browsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, userOpenInfoDto.getOpenid());
+            browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
+            browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "0");
+            WxBrowsingUsers wxBrowsingUsers = wxBrowsingUsersService.getOne(browsingUsersLambdaQueryWrapper);
+            if (!ObjectUtils.isEmpty(wxBrowsingUsers)) {
+                wxBrowsingUsers.setBrowsingType("1");
+                wxBrowsingUsersService.updateById(wxBrowsingUsers);
+            }
+            return ApiResponse.ok();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.error("数据获取失败");
+    }
+
 
 }

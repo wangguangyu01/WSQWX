@@ -7,10 +7,10 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.OderPay;
+import com.tencent.wxcloudrun.model.WxBrowsingUsers;
+import com.tencent.wxcloudrun.model.WxPersonalBrowse;
 import com.tencent.wxcloudrun.model.WxUser;
-import com.tencent.wxcloudrun.service.OderPayService;
-import com.tencent.wxcloudrun.service.PayService;
-import com.tencent.wxcloudrun.service.WxUserService;
+import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,12 @@ public class PayConttoller  {
     @Autowired
     private WxUserService wxUserService;
 
+    @Autowired
+    private WxBrowsingUsersService wxBrowsingUsersService;
+
+    @Autowired
+    private WxPersonalBrowseService wxPersonalBrowseService;
+
 
 
     @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
@@ -59,9 +65,28 @@ public class PayConttoller  {
                 oderPay.setPaySuccess(2);
                 oderPay.setTransactionId(requestDTO.getTransaction_id());
                 oderPayService.updateById(oderPay);
-                WxUser wxUser = wxUserService.queryWxUserOne(oderPay.getOpenId());
-                wxUser.setAuthentication("1");
-                wxUserService.updateWxUser(wxUser);
+                if (oderPay.getPayType() == 1) {
+                    WxUser wxUser = wxUserService.queryWxUserOne(oderPay.getOpenId());
+                    wxUser.setAuthentication("1");
+                    wxUserService.updateWxUser(wxUser);
+                } else if (oderPay.getPayType() == 3) {
+                    // 普通会员浏览资料费用
+                    LambdaQueryWrapper<WxPersonalBrowse> browseLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    browseLambdaQueryWrapper.eq(WxPersonalBrowse::getTradeNo, requestDTO.getOut_trade_no());
+                    WxPersonalBrowse wxPersonalBrowse = wxPersonalBrowseService.getOne(browseLambdaQueryWrapper);
+                    if (!ObjectUtils.isEmpty(wxPersonalBrowse)) {
+                        LambdaQueryWrapper<WxBrowsingUsers> browsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                        browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, wxPersonalBrowse.getBrowsingOpenid());
+                        browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowse.getLoginOpenId());
+                        browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "0");
+                        WxBrowsingUsers wxBrowsingUsers  = wxBrowsingUsersService.getOne(browsingUsersLambdaQueryWrapper);
+                        if (!ObjectUtils.isEmpty(wxBrowsingUsers)) {
+                            wxBrowsingUsers.setBrowsingType("2");
+                            wxBrowsingUsersService.updateById(wxBrowsingUsers);
+                        }
+
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

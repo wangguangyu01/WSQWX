@@ -2,14 +2,9 @@ package com.tencent.wxcloudrun.service.impl;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.tencent.wxcloudrun.dao.BlogContentMapper;
-import com.tencent.wxcloudrun.dao.SysConfigMapper;
-import com.tencent.wxcloudrun.dao.WxActivityMapper;
+import com.tencent.wxcloudrun.dao.*;
 import com.tencent.wxcloudrun.dto.UnifiedorderDto;
-import com.tencent.wxcloudrun.model.BlogContent;
-import com.tencent.wxcloudrun.model.OderPay;
-import com.tencent.wxcloudrun.model.SysConfig;
-import com.tencent.wxcloudrun.model.WxActivity;
+import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.OderPayService;
 import com.tencent.wxcloudrun.service.PayService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
@@ -28,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -65,6 +62,12 @@ public class PayServiceImpl implements PayService {
     @Autowired
     private BlogContentMapper blogContentMapper;
 
+    @Autowired
+    private WxUserMapper wxUserMapper;
+
+    @Autowired
+    private WxPersonalBrowseMapper wxPersonalBrowseMapper;
+
 
     private String notify_url = "https://springboot-u4yq-39835-6-1317513730.sh.run.tcloudbase.com/notifyOrder";
 
@@ -78,7 +81,8 @@ public class PayServiceImpl implements PayService {
      * 生成订单保存到数据库中
      *
      * @param openId
-     * @param payType 1:会员充值；2：参加活动
+     * @param payType
+     *       1:认证会员充值；2：参加活动；3普通会员浏览资料费用
      * @return
      */
     @Override
@@ -91,7 +95,7 @@ public class PayServiceImpl implements PayService {
         if (payType == 1) {
             // 查询配置中的会员费用
             LambdaQueryWrapper<SysConfig> queryWrapper = new LambdaQueryWrapper();
-            queryWrapper.eq(SysConfig::getParamKey, "membership_fee");
+            queryWrapper.eq(SysConfig::getParamKey, "authentication_fee");
             SysConfig sysConfig = sysConfigMapper.selectOne(queryWrapper);
             priceStr = sysConfig.getParamValue();
             body = "大卫维尼-会员充值";
@@ -103,7 +107,18 @@ public class PayServiceImpl implements PayService {
                  body = "大卫维尼-活动报名费用";
                  attach = "参加活动名称: "+blogContent.getTitle();
              }
-
+        } else if (payType == 3) {
+            // 查询配置中的会员费用
+            LambdaQueryWrapper<WxUser> wxUserLambdaQueryWrapper = new LambdaQueryWrapper();
+            wxUserLambdaQueryWrapper.eq(WxUser::getOpenId, activityUuid);
+            WxUser wxUser = wxUserMapper.selectOne(wxUserLambdaQueryWrapper);
+            // 查询配置中的会员费用
+            LambdaQueryWrapper<SysConfig> queryWrapper = new LambdaQueryWrapper();
+            queryWrapper.eq(SysConfig::getParamKey, "browse_fee");
+            SysConfig sysConfig = sysConfigMapper.selectOne(queryWrapper);
+            priceStr = sysConfig.getParamValue();
+            body = "大卫维尼-浏览资料";
+            attach = "浏览会员序号：" + wxUser.getSerialNumber() + "的资料";
         }
         UnifiedorderDto unifiedorderDto = UnifiedorderDto
                 .builder()
@@ -161,6 +176,7 @@ public class PayServiceImpl implements PayService {
                     .tradeCreateTime(new Date())
                     .build();
             oderPayService.save(oderPay);
+            // 如果支付的是活动的费用，下单成功后修改参加后活动的订单号
             if (StringUtils.isNotBlank(activityUuid) && payType == 2) {
                 LambdaQueryWrapper<WxActivity> queryWrapper = new LambdaQueryWrapper();
                 queryWrapper.eq(WxActivity::getOpenId, openId);
@@ -168,9 +184,21 @@ public class PayServiceImpl implements PayService {
                 WxActivity wxActivity = wxActivityMapper.selectOne(queryWrapper);
                 wxActivity.setTradeNo(out_trade_no);
                 wxActivityMapper.updateById(wxActivity);
+            } else if (StringUtils.isNotBlank(activityUuid) && payType == 3) {
+                // 查询单独支付浏览费用的订单，如果不为空，同时支付失败的情况下删除记录
+                LambdaQueryWrapper<WxPersonalBrowse> browseLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                browseLambdaQueryWrapper.eq(WxPersonalBrowse::getLoginOpenId, openId);
+                browseLambdaQueryWrapper.eq(WxPersonalBrowse::getBrowsingOpenid, activityUuid);
+                WxPersonalBrowse wxPersonalBrowse = wxPersonalBrowseMapper.selectOne(browseLambdaQueryWrapper);
+                wxPersonalBrowse.setTradeNo(out_trade_no);
+                wxPersonalBrowseMapper.updateById(wxPersonalBrowse);
             }
+
             treeMap.put("package", prepay_id);
-            treeMap.put("price", priceStr);
+            // 用于金额的显示
+            BigDecimal decimal = NumberUtils.createBigDecimal(priceStr);
+            BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
+            treeMap.put("price", String.valueOf(bigDecimal));
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));
             return treeMap;
         }

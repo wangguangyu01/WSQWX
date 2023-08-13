@@ -23,7 +23,7 @@ public class UserOpenInfoDto implements Serializable {
     private String unionid;
 
     /**
-     * 用户的openid
+     * 资料用户的openid
      */
     private String openid;
 
@@ -33,4 +33,9 @@ public class UserOpenInfoDto implements Serializable {
     private String errmsg;
 
     private String errcode;
+
+    /**
+     * 登录人员的openid
+     */
+    private String loginOpenId;
 }

@@ -223,4 +223,15 @@ public class WxUser implements Serializable {
      */
     private  String authentication;
 
+
+    @TableField(exist = false)
+    private boolean showWxNumber;
+
+
+    /**
+     * 是否显示页面充值按钮
+     */
+    @TableField(exist = false)
+    private boolean showbutton;
+
 }
