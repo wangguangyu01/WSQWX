@@ -77,6 +77,7 @@ public class WxPersonalBrowseController {
             String ip  = ipUtil.getIP(request);
             wxPersonalBrowseDTO.setRequestIp(ip);
             Map<String,Object> map = wxPersonalBrowseService.paypPersonalBrowse(wxPersonalBrowseDTO);
+            map.put("browsingOpenid", wxPersonalBrowseDTO.getBrowsingOpenid());
             return ApiResponse.ok(map);
         } catch (Exception e) {
             e.printStackTrace();
