@@ -114,7 +114,7 @@ public class WxUserServiceImpl implements WxUserService {
     @Override
     public IPage<WxUser> queryWxUserPage(WxUserPageParamDto wxUserPageParamDto) throws Exception {
         // 查询审核通过的
-        wxUserPageParamDto.setApprove("1");
+        wxUserPageParamDto.setApprove("0");
         Page page = new Page(wxUserPageParamDto.getCurrentPage(), wxUserPageParamDto.getLimit());
         IPage<WxUser> wxUserIPage = wxUserMapper.queryWxUserPage(page, wxUserPageParamDto);
         if (!ObjectUtils.isEmpty(wxUserIPage)) {
