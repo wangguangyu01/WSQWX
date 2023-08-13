@@ -114,7 +114,7 @@ public class WxUserController {
 
 
     /**
-     * 注册人员信息
+     * 会员的信息
      *
      * @param userOpenInfoDto
      * @return
@@ -204,6 +204,43 @@ public class WxUserController {
             e.printStackTrace();
         }
         return ApiResponse.error("数据获取失败");
+    }
+
+
+
+    /**
+     * 注册人员信息
+     *
+     * @param userOpenInfoDto
+     * @return
+     */
+    @PostMapping(value = "/api/queryRegisterUserInfo")
+    public ApiResponse queryRegisterUserInfo(@RequestBody UserOpenInfoDto userOpenInfoDto)  {
+        log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(userOpenInfoDto));
+        WxUser wxUserOne = null;
+        try {
+            int openIdCount = 0;
+            if (StringUtils.isNotBlank(userOpenInfoDto.getOpenid())) {
+                openIdCount = wxUserService.queryCount(userOpenInfoDto.getOpenid());
+                if (openIdCount != 0) {
+                    wxUserOne = wxUserService.queryWxUserOne(userOpenInfoDto.getOpenid());
+                }
+            }
+
+            if (openIdCount == 0 && StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
+                wxUserOne = wxUserService.queryWxUserOneByPhone(userOpenInfoDto.getPhone());
+            }
+
+            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getHeight())) {
+                wxUserOne.setHeight("-");
+            }
+            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
+                wxUserOne.setWeight("-");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiResponse.ok(wxUserOne);
     }
 
 
