@@ -15,6 +15,7 @@ import com.tencent.wxcloudrun.service.WxPersonalBrowseService;
 import com.tencent.wxcloudrun.utils.IPUtil;
 import com.tencent.wxcloudrun.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -26,6 +27,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -57,14 +59,12 @@ public class WxPersonalBrowseController {
             LambdaQueryWrapper<WxPersonalBrowse> browseLambdaQueryWrapper = new LambdaQueryWrapper<>();
             browseLambdaQueryWrapper.eq(WxPersonalBrowse::getLoginOpenId, wxPersonalBrowseDTO.getLoginOpenId());
             browseLambdaQueryWrapper.eq(WxPersonalBrowse::getBrowsingOpenid, wxPersonalBrowseDTO.getBrowsingOpenid());
-            WxPersonalBrowse wxPersonalBrowse = wxPersonalBrowseService.getOne(browseLambdaQueryWrapper);
-            if (!ObjectUtils.isEmpty(wxPersonalBrowse)) {
-                if (StringUtils.isNotBlank(wxPersonalBrowse.getTradeNo())) {
-                    OderPay oderPay  = payService.queryOderPay(wxPersonalBrowse.getTradeNo());
-                    if (ObjectUtils.isEmpty(oderPay)) {
-                        wxPersonalBrowseService.removeById(wxPersonalBrowse.getId());
-                    } else {
-                        if (oderPay.getPaySuccess() != 2) {
+            List<WxPersonalBrowse> wxPersonalBrowses = wxPersonalBrowseService.list(browseLambdaQueryWrapper);
+            if (CollectionUtils.isNotEmpty(wxPersonalBrowses)) {
+                for (WxPersonalBrowse wxPersonalBrowse: wxPersonalBrowses) {
+                    if (StringUtils.isNotBlank(wxPersonalBrowse.getTradeNo())) {
+                        OderPay oderPay  = payService.queryOderPay(wxPersonalBrowse.getTradeNo());
+                        if (!ObjectUtils.isEmpty(oderPay) && oderPay.getPaySuccess() != 2) {
                             wxPersonalBrowseService.removeById(wxPersonalBrowse.getId());
                             oderPayService.removeById(oderPay.getId());
                         }
