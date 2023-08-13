@@ -285,7 +285,7 @@ public class WxUserController {
                 wxBrowsingUsers.setBrowsingType("1");
                 wxBrowsingUsersService.updateById(wxBrowsingUsers);
             }
-            return ApiResponse.ok();
+            return ApiResponse.ok(userOpenInfoDto.getOpenid());
         } catch (Exception e) {
             e.printStackTrace();
         }
