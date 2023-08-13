@@ -9,15 +9,13 @@ import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
 import com.tencent.wxcloudrun.dto.WxUserCodeDto;
 import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
-import com.tencent.wxcloudrun.model.OderPay;
-import com.tencent.wxcloudrun.model.WxBrowsingUsers;
-import com.tencent.wxcloudrun.model.WxPersonalBrowse;
-import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.vo.WxUserPowerVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -53,6 +51,9 @@ public class WxUserController {
 
     @Autowired
     private OderPayService oderPayService;
+
+    @Autowired
+    private SysConfigService sysConfigService;
 
 
     @PostMapping(value = "/api/checkWxUser")
@@ -215,8 +216,30 @@ public class WxUserController {
     @PostMapping(value = "/api/showWxNumberClick")
     public ApiResponse showWxNumberClick(@RequestBody UserOpenInfoDto userOpenInfoDto) {
         try {
+
             log.info("showWxNumberClick userOpenInfoDto--->{}", JSON.toJSONString(userOpenInfoDto));
+            LambdaQueryWrapper<OderPay> oderPayLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            oderPayLambdaQueryWrapper.eq(OderPay::getOpenId, userOpenInfoDto.getLoginOpenId());
+            oderPayLambdaQueryWrapper.eq(OderPay::getPayType, 1);
+            List<OderPay> oderPays = oderPayService.list(oderPayLambdaQueryWrapper);
+            // 允许查看用户微信号个数
+            int total = 10;
+            if (CollectionUtils.isNotEmpty(oderPays)) {
+                LambdaQueryWrapper<SysConfig> sysConfigLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                sysConfigLambdaQueryWrapper.eq(SysConfig::getParamKey, "vip_show_count");
+                SysConfig sysConfig = sysConfigService.getOne(sysConfigLambdaQueryWrapper);
+                int showMembersCount = NumberUtils.toInt(sysConfig.getParamValue(), 10);
+                total = showMembersCount * oderPays.size();
+
+            }
             LambdaQueryWrapper<WxBrowsingUsers> browsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
+            browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "1");
+            int countShow  = wxBrowsingUsersService.count(browsingUsersLambdaQueryWrapper);
+            if (countShow == total) {
+                return ApiResponse.error("您已经到获取用户微信联系方式的上限");
+            }
+            browsingUsersLambdaQueryWrapper.clear();
             browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, userOpenInfoDto.getOpenid());
             browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
             browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "0");
