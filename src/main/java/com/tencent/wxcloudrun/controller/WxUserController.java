@@ -154,7 +154,7 @@ public class WxUserController {
                 wxUserOne.setShowWxNumber(true);
                 wxUserOne.setShowbutton(false);
             } else {
-                if (!ObjectUtils.isEmpty(wxUser) && StringUtils.equals(wxUser.getApprove(), "1")) {
+                if (!ObjectUtils.isEmpty(wxUser) && StringUtils.equals(wxUser.getApprove(), "0")) {
                     // 如果审核通过了，查询浏览的用户是否包含该浏览的用户
                     LambdaQueryWrapper<WxBrowsingUsers> usersLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     usersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
