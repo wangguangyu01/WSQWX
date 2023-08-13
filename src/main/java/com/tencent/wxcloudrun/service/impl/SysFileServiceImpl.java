@@ -3,9 +3,12 @@ package com.tencent.wxcloudrun.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tencent.wxcloudrun.dao.BlogContentMapper;
 import com.tencent.wxcloudrun.dao.SysFileMapper;
+import com.tencent.wxcloudrun.dao.WxUserMapper;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
+import com.tencent.wxcloudrun.dto.UploadUserFileDto;
 import com.tencent.wxcloudrun.model.SysFile;
+import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.SysFileService;
 import com.tencent.wxcloudrun.utils.DateUtils;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +33,9 @@ public class SysFileServiceImpl implements SysFileService {
 
     @Autowired
     private  AttachmentService attachmentService;
+
+    @Autowired
+    private WxUserMapper  wxUserMapper;
 
     public SysFileServiceImpl(SysFileMapper sysFileMapper) {
         this.sysFileMapper = sysFileMapper;
@@ -66,9 +73,9 @@ public class SysFileServiceImpl implements SysFileService {
 
 
     @Override
-    public int remove(String  fileId) {
+    public int remove(UploadUserFileDto uploadUserFileDto) {
         List<String> fileid_list = new ArrayList<>();
-        fileid_list.add(fileId);
+        fileid_list.add(uploadUserFileDto.getFileid());
         List<String> list = attachmentService.batchDeleteFile(fileid_list);
         LambdaQueryWrapper<SysFile> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.in(SysFile::getFileId, list);
@@ -79,6 +86,14 @@ public class SysFileServiceImpl implements SysFileService {
                   idList.add(file.getId());
               }
         }
+        if (uploadUserFileDto.getType() == 11) {
+            WxUser wxUser = wxUserMapper.selectById(uploadUserFileDto.getOpenId());
+            if (!ObjectUtils.isEmpty(wxUser)) {
+                wxUser.setHeadimgurl("");
+                wxUserMapper.updateById(wxUser);
+            }
+        }
+
         return sysFileMapper.deleteBatchIds(idList);
     }
 

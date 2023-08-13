@@ -6,8 +6,10 @@ import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.UploadUserFileDto;
 import com.tencent.wxcloudrun.model.SysFile;
+import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.SysFileService;
+import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +43,9 @@ public class FileController {
     @Autowired
     private SysFileService fileService;
 
+    @Autowired
+    private WxUserService wxUserService;
+
     @PostMapping("/api/uploadFile" )
     public ApiResponse uploadFile(@RequestBody UploadUserFileDto uploadUserFileDto) throws IOException {
         try {
@@ -63,6 +68,11 @@ public class FileController {
                             .contentId(uploadUserFileDto.getOpenId())
                             .type(uploadUserFileDto.getType())
                             .build();
+                    if (uploadUserFileDto.getType() == 11) {
+                        WxUser wxUser = wxUserService.queryWxUserOne(uploadUserFileDto.getOpenId());
+                        wxUser.setHeadimgurl(fileResponseDto.getDownload_url());
+                        wxUserService.updateWxUser(wxUser);
+                    }
                     fileService.saveFile(sysFile);
                 }
             }
@@ -79,8 +89,9 @@ public class FileController {
     ApiResponse fileDelete(@RequestBody UploadUserFileDto uploadUserFileDto) {
         try {
             log.info("/api/fileDelete uploadUserFileDto--->{}", JSONObject.toJSONString(uploadUserFileDto));
-            fileService.remove(uploadUserFileDto.getFileid());
-            List<SysFile> fileList = fileService.queryFile(uploadUserFileDto.getOpenId(), 4);
+            fileService.remove(uploadUserFileDto);
+            List<SysFile> fileList = fileService.queryFile(uploadUserFileDto.getOpenId(),
+                    uploadUserFileDto.getType());
             // 直接返回腾讯在服务器上的id
             List<String> fileIds = new ArrayList<>(10);
             if (CollectionUtils.isEmpty(fileList)) {

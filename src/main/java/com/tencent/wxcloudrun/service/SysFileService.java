@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.service;
 
+import com.tencent.wxcloudrun.dto.UploadUserFileDto;
 import com.tencent.wxcloudrun.model.SysFile;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public interface SysFileService {
 
 
 
-    public int remove(String  fileId);
+    public int remove(UploadUserFileDto uploadUserFileDto);
 
     public SysFile updateFileUrl(SysFile file) throws Exception;
 }
