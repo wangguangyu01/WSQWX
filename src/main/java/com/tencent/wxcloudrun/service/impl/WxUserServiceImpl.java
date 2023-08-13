@@ -107,6 +107,7 @@ public class WxUserServiceImpl implements WxUserService {
 
     @Override
     public int addWxUser(WxUser wxUser) {
+        wxUser.setApprove("2");
         return wxUserMapper.insert(wxUser);
     }
 
