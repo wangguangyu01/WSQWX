@@ -153,6 +153,9 @@ public class WxUser implements Serializable {
 
     /**
      * 审批是否通过
+     * 0:通过
+     * 1:不通过
+     * 2:待审核
      */
     @TableField(value = "approve")
     private String approve;

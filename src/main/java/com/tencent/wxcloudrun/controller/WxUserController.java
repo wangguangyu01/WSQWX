@@ -72,7 +72,7 @@ public class WxUserController {
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
             WxUser wxUser = new WxUser();
             BeanUtils.copyProperties(wxUserDto, wxUser);
-            wxUser.setApprove("0");
+            wxUser.setApprove("2");
             WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
             int count = wxUserService.queryPhoneCount(wxUserDto.getPhone());
             if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
