@@ -8,19 +8,26 @@ import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dao.CountersMapper;
 import com.tencent.wxcloudrun.dao.TSerialNumberMapper;
+import com.tencent.wxcloudrun.dao.WxBrowsingUsersMapper;
 import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.model.TSerialNumber;
+import com.tencent.wxcloudrun.model.WxBrowsingUsers;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.TSerialNumberService;
+import com.tencent.wxcloudrun.service.WxBrowsingUsersService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import com.tencent.wxcloudrun.utils.MD5Utils;
 import com.tencent.wxcloudrun.utils.UUIDGenerator;
 import com.tencent.wxcloudrun.utils.XmlToStringUtil;
+import com.tencent.wxcloudrun.vo.BrowsingUsersCountVo;
+import com.tencent.wxcloudrun.vo.WxUserBrowsingUsersVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -71,6 +78,12 @@ public class WxCloudRunApplicationTest {
 
     @Autowired
     private TSerialNumberService tSerialNumberService;
+
+    @Autowired
+    private WxBrowsingUsersService browsingUsersService;
+
+    @Autowired
+    private WxBrowsingUsersMapper wxBrowsingUsersMapper;
 
     @Test
     public void testCount() throws Exception {
@@ -220,4 +233,32 @@ public class WxCloudRunApplicationTest {
         System.out.println(ddd);
     }
 
+    @Test
+    public void testSearch() {
+        BrowsingUsersCountVo browsingUsersCountVo = new BrowsingUsersCountVo();
+        LambdaQueryWrapper<WxBrowsingUsers> wxBrowsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        wxBrowsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, "o0orR5Ky23-zyG74OInlL3QreR0s");
+        int total = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
+        browsingUsersCountVo.setTotal(total);
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        wxBrowsingUsersLambdaQueryWrapper.in(WxBrowsingUsers::getBrowsingType, list);
+        int payCount = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
+        browsingUsersCountVo.setPayCount(payCount);
+        System.out.println(browsingUsersCountVo);
+    }
+
+
+    @Test
+    public void testqueryBrowsingUsersPage() {
+        WxPersonalBrowsePageDTO wxPersonalBrowsePageDTO  =new WxPersonalBrowsePageDTO();
+        wxPersonalBrowsePageDTO.setCurrentPage(1);
+        wxPersonalBrowsePageDTO.setLimit(10);
+        wxPersonalBrowsePageDTO.setPay("0");
+        wxPersonalBrowsePageDTO.setLoginOpenId("o0orR5Ky23-zyG74OInlL3QreR0s");
+        Page page = new Page(wxPersonalBrowsePageDTO.getCurrentPage(), wxPersonalBrowsePageDTO.getLimit());
+        IPage<WxUserBrowsingUsersVo> wxUserIPage = wxBrowsingUsersMapper.queryBrowsingUsersPage( page,wxPersonalBrowsePageDTO);
+        System.out.println(wxUserIPage.getRecords().size());
+    }
 }
