@@ -68,6 +68,7 @@ public class WxActivityController {
             Map<String, Object> map = new HashMap<>();
             if (ObjectUtils.isEmpty(wxActivity)) {
                 map = wxActivityService.activityOrder(wxActivityDTO);
+                map.put("activityUuid", wxActivityDTO.getActivityUuid());
                 return ApiResponse.ok(map);
             } else  {
                 OderPay oderPay = payService.queryOderPay(wxActivity.getTradeNo());
@@ -88,8 +89,8 @@ public class WxActivityController {
                     String prepay_id = oderPay.getPrepayId();
                     prepay_id = StringUtils.substring(prepay_id, StringUtils.indexOf(prepay_id, "=")+1);
                     treeMap.put("package", prepay_id);
+                    map.put("activityUuid", wxActivityDTO.getActivityUuid());
                     return ApiResponse.ok(treeMap);
-
                 }
             }
         } catch (Exception e) {
