@@ -14,6 +14,8 @@ import com.tencent.wxcloudrun.service.CounterService;
 import com.tencent.wxcloudrun.service.SysFileService;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -83,7 +87,6 @@ public class BlogContentController {
             fileUrlList.add(sysFile.getUrl());
         }
         blogContent.setFileList(fileUrlList);
-
         List<SysFile> moneyQRCodeFileList = sysFileService.queryFile(blogContent.getUuid(), 2);
         if (CollectionUtils.isNotEmpty(moneyQRCodeFileList)) {
             SysFile moneyQRCodeFile = moneyQRCodeFileList.get(0);
@@ -91,6 +94,12 @@ public class BlogContentController {
             blogContent.setMoneyQRCode(moneyQRCodeFileNew.getUrl());
         } else {
             blogContent.setMoneyQRCode("");
+        }
+        if (Objects.nonNull(blogContent) && Objects.nonNull(blogContent.getPrice())) {
+            // 用于金额的显示
+            BigDecimal decimal = NumberUtils.createBigDecimal(blogContent.getPrice() + "");
+            BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
+            blogContent.setPrice(NumberUtils.toLong(String.valueOf(bigDecimal), 0L));
         }
 
         return ApiResponse.ok(blogContent);
