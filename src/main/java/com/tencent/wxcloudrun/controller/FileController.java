@@ -68,11 +68,6 @@ public class FileController {
                             .contentId(uploadUserFileDto.getOpenId())
                             .type(uploadUserFileDto.getType())
                             .build();
-                    if (uploadUserFileDto.getType() == 11) {
-                        WxUser wxUser = wxUserService.queryWxUserOne(uploadUserFileDto.getOpenId());
-                        wxUser.setHeadimgurl(fileResponseDto.getDownload_url());
-                        wxUserService.updateWxUser(wxUser);
-                    }
                     fileService.saveFile(sysFile);
                 }
             }

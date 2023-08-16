@@ -54,6 +54,8 @@ public class WxUserController {
 
     @Autowired
     private SysConfigService sysConfigService;
+    @Autowired
+    private SysFileService fileService;
 
 
     @PostMapping(value = "/api/checkWxUser")
@@ -79,6 +81,15 @@ public class WxUserController {
                 String serialNumber = tSerialNumberService.createSerialNumber();
                 wxUser.setSerialNumber(serialNumber);
                 wxUserService.addWxUser(wxUser);
+                if (!ObjectUtils.isEmpty(wxUser)) {
+                    List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
+                    if (CollectionUtils.isNotEmpty(files)) {
+                        wxUser.setHeadimgurl(files.get(0).getUrl());
+                        wxUserService.updateWxUser(wxUser);
+                    }
+
+                }
+
             } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
                 wxUserService.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
                 wxUserService.updateWxUser(wxUser);
