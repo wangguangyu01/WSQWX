@@ -116,6 +116,7 @@ public class WxPersonalBrowseController {
         if (StringUtils.isBlank(wxPersonalBrowseDTO.getLoginOpenId())) {
             return ApiResponse.error("缺少登录用户的openid");
         }
+        log.info("pay--->{}", wxPersonalBrowseDTO.getPay());
         IPage<WxUserBrowsingUsersVo> wxUserIPage = browsingUsersService.queryWxUserPage(wxPersonalBrowseDTO);
         return ApiResponse.ok(wxUserIPage);
     }
