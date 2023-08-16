@@ -227,7 +227,7 @@ public class WxUserController {
      */
     @PostMapping(value = "/api/queryRegisterUserInfo")
     public ApiResponse queryRegisterUserInfo(@RequestBody UserOpenInfoDto userOpenInfoDto)  {
-        log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(userOpenInfoDto));
+        log.info("queryWxUserPage userOpenInfoDto--->{}", JSON.toJSONString(userOpenInfoDto));
         WxUser wxUserOne = null;
         try {
             int openIdCount = 0;
@@ -241,13 +241,15 @@ public class WxUserController {
             if (openIdCount == 0 && StringUtils.isNotBlank(userOpenInfoDto.getPhone())) {
                 wxUserOne = wxUserService.queryWxUserOneByPhone(userOpenInfoDto.getPhone());
             }
+            if (!ObjectUtils.isEmpty(wxUserOne)) {
+                if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getHeight())) {
+                    wxUserOne.setHeight("-");
+                }
+                if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
+                    wxUserOne.setWeight("-");
+                }
+            }
 
-            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getHeight())) {
-                wxUserOne.setHeight("-");
-            }
-            if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
-                wxUserOne.setWeight("-");
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
