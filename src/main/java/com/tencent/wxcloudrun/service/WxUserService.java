@@ -57,6 +57,13 @@ public interface WxUserService {
     int updateByPhone(String openid, String phone);
 
 
+    /**
+     * 添加或是保存微信注册用户
+     * @param wxUser
+     */
+    public WxUser  addOrUpdateWxUser(WxUserDto wxUserDto);
+
+
 
 }
 

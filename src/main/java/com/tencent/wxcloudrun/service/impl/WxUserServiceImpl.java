@@ -10,20 +10,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
-import com.tencent.wxcloudrun.dto.CategoriesRequest;
-import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
-import com.tencent.wxcloudrun.dto.WxUserInfoVo;
-import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
+import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.SysFile;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.service.SysFileService;
+import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.service.WxUserService;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +67,16 @@ public class WxUserServiceImpl implements WxUserService {
     private SysFileService sysFileService;
 
 
+
+
+
+
     @Autowired
-    private AttachmentService attachmentService;
+    private TSerialNumberService tSerialNumberService;
+
+
+    @Autowired
+    private SysFileService fileService;
 
 
     /**
@@ -285,6 +292,41 @@ public class WxUserServiceImpl implements WxUserService {
     @Override
     public int updateByPhone(String openid,String phone) {
         return  wxUserMapper.updateByPhone(openid, phone);
+    }
+
+
+
+    @Override
+    public WxUser addOrUpdateWxUser(WxUserDto wxUserDto) {
+        WxUser wxUser = new WxUser();
+        BeanUtils.copyProperties(wxUserDto, wxUser);
+        wxUser.setApprove("2");
+        WxUser wxUserObj = this.queryWxUserOne(wxUser.getOpenId());
+        int count = this.queryPhoneCount(wxUser.getPhone());
+        if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
+            String serialNumber = tSerialNumberService.createSerialNumber();
+            wxUser.setSerialNumber(serialNumber);
+            this.addWxUser(wxUser);
+            if (!ObjectUtils.isEmpty(wxUser)) {
+                updateHeadImagUrl(wxUser);
+            }
+        } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
+            this.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
+            updateHeadImagUrl(wxUser);
+            this.updateWxUser(wxUser);
+        } else if (!ObjectUtils.isEmpty(wxUserObj)) {
+            updateHeadImagUrl(wxUser);
+            this.updateWxUser(wxUser);
+        }
+        return wxUser;
+    }
+
+    private void updateHeadImagUrl(WxUser wxUser) {
+        List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
+        if (CollectionUtils.isNotEmpty(files)) {
+            wxUser.setHeadimgurl(files.get(0).getUrl());
+            this.updateWxUser(wxUser);
+        }
     }
 }
 

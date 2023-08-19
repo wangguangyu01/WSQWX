@@ -46,8 +46,6 @@ public class WxUserController {
     private WxBrowsingUsersService wxBrowsingUsersService;
 
 
-    @Autowired
-    private WxPersonalBrowseService wxPersonalBrowseService;
 
     @Autowired
     private OderPayService oderPayService;
@@ -72,35 +70,20 @@ public class WxUserController {
                 return ApiResponse.error("缺少注册用户信息");
             }
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
-            WxUser wxUser = new WxUser();
-            BeanUtils.copyProperties(wxUserDto, wxUser);
-            wxUser.setApprove("2");
-            WxUser wxUserObj = wxUserService.queryWxUserOne(wxUser.getOpenId());
-            int count = wxUserService.queryPhoneCount(wxUserDto.getPhone());
-            if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
-                String serialNumber = tSerialNumberService.createSerialNumber();
-                wxUser.setSerialNumber(serialNumber);
-                wxUserService.addWxUser(wxUser);
-                if (!ObjectUtils.isEmpty(wxUser)) {
-                    List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
-                    if (CollectionUtils.isNotEmpty(files)) {
-                        wxUser.setHeadimgurl(files.get(0).getUrl());
-                        wxUserService.updateWxUser(wxUser);
-                    }
-
-                }
-
-            } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
-                wxUserService.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
-                wxUserService.updateWxUser(wxUser);
-            } else if (!ObjectUtils.isEmpty(wxUserObj)) {
-                wxUserService.updateWxUser(wxUser);
-            }
+            WxUser wxUser =wxUserService.addOrUpdateWxUser(wxUserDto);
             return ApiResponse.ok(wxUser);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ApiResponse.error("添加失败");
+    }
+
+    private void updateHeadImagUrl(WxUser wxUser) {
+        List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
+        if (CollectionUtils.isNotEmpty(files)) {
+            wxUser.setHeadimgurl(files.get(0).getUrl());
+            wxUserService.updateWxUser(wxUser);
+        }
     }
 
 
