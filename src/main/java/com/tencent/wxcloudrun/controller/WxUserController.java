@@ -181,6 +181,7 @@ public class WxUserController {
                                 .build();
                         wxBrowsingUsersService.save(wxBrowsingUsersSave);
                     }
+                    wxUserOne.setAuthentication(wxUser.getAuthentication());
                 } else {
                     wxUserOne.setShowWxNumber(false);
                     wxUserOne.setShowbutton(false);
