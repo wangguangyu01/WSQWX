@@ -20,7 +20,7 @@
         <result column="allow_feed" jdbcType="INTEGER" property="allowFeed"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="author" jdbcType="VARCHAR" property="author"/>
-        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
         <result column="gtm_create" jdbcType="TIMESTAMP" property="gtmCreate"/>
         <result column="gtm_modified" jdbcType="TIMESTAMP" property="gtmModified"/>
     </resultMap>

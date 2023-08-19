@@ -99,7 +99,7 @@ public class BlogContentController {
             // 用于金额的显示
             BigDecimal decimal = NumberUtils.createBigDecimal(blogContent.getPrice() + "");
             BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
-            blogContent.setPrice(NumberUtils.toDouble(String.valueOf(bigDecimal), 0L));
+            blogContent.setPrice(NumberUtils.toDouble(String.valueOf(bigDecimal), 0d));
         }
 
         return ApiResponse.ok(blogContent);

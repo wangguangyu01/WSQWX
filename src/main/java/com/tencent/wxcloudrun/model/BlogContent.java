@@ -141,5 +141,5 @@ public class BlogContent {
 
 
     @TableField(value = "price")
-    private Long price;
+    private Double  price;
 }
