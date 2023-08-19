@@ -78,13 +78,6 @@ public class WxUserController {
         return ApiResponse.error("添加失败");
     }
 
-    private void updateHeadImagUrl(WxUser wxUser) {
-        List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
-        if (CollectionUtils.isNotEmpty(files)) {
-            wxUser.setHeadimgurl(files.get(0).getUrl());
-            wxUserService.updateWxUser(wxUser);
-        }
-    }
 
 
     /**
