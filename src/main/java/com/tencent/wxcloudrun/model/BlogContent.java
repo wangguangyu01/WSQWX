@@ -141,5 +141,9 @@ public class BlogContent {
 
 
     @TableField(value = "price")
-    private Double  price;
+    private Integer  price;
+
+
+    @TableField(exist = false)
+    private double  priceDouble;
 }

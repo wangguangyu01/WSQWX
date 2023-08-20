@@ -24,4 +24,12 @@ public interface BlogContentService {
      * @return
      */
     BlogContent queryBlogContentInfo(ContentRequest contentRequest);
+
+
+    /**
+     * 根据uuid查询内容详情
+     * @param uuid
+     * @return
+     */
+    BlogContent queryBlogContentInfo(String  uuid);
 }

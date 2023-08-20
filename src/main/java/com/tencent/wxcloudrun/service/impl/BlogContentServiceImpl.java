@@ -93,4 +93,12 @@ public class BlogContentServiceImpl implements BlogContentService {
         }
         return file;
     }
+
+
+    @Override
+    public BlogContent queryBlogContentInfo(String uuid) {
+        LambdaQueryWrapper<BlogContent> lambdaQueryWrapper= new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(BlogContent::getUuid, uuid);
+        return blogContentMapper.selectOne(lambdaQueryWrapper);
+    }
 }
