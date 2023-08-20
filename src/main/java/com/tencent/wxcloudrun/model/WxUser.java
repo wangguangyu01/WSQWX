@@ -237,4 +237,16 @@ public class WxUser implements Serializable {
     @TableField(exist = false)
     private boolean showbutton;
 
+    /**
+     * 登录用户是否通过审核
+     */
+    @TableField(exist = false)
+    private boolean loginApprove;
+
+    /**
+     * 登录用户是否认证
+     */
+    @TableField(exist = false)
+    private boolean loginAuthentication;
+
 }

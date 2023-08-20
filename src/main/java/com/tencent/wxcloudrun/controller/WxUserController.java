@@ -181,10 +181,17 @@ public class WxUserController {
                                 .build();
                         wxBrowsingUsersService.save(wxBrowsingUsersSave);
                     }
-                    wxUserOne.setAuthentication(wxUser.getAuthentication());
+                    wxUserOne.setLoginApprove(true);
+                    if (StringUtils.equals(wxUser.getAuthentication(), "1")) {
+                        wxUserOne.setLoginAuthentication(true);
+                    } else {
+                        wxUserOne.setLoginAuthentication(false);
+                    }
                 } else {
                     wxUserOne.setShowWxNumber(false);
                     wxUserOne.setShowbutton(false);
+                    wxUserOne.setLoginApprove(false);
+                    wxUserOne.setLoginAuthentication(false);
                 }
             }
             return ApiResponse.ok(wxUserOne);
