@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.service;
 
+import com.tencent.wxcloudrun.dto.WeiXinParamDTO;
 import com.tencent.wxcloudrun.model.OderPay;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +25,7 @@ public interface PayService {
      * @return
      */
     OderPay queryOderPay(String tradeNo);
+
+
+    public WeiXinParamDTO queryWeiXinParam();
 }

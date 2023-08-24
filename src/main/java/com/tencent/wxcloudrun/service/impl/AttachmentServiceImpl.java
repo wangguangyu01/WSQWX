@@ -3,10 +3,13 @@ package com.tencent.wxcloudrun.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.tencent.wxcloudrun.dao.SystemConfigMapper;
 import com.tencent.wxcloudrun.dto.FileRequestDto;
 import com.tencent.wxcloudrun.dto.FileResponseDto;
 import com.tencent.wxcloudrun.dto.FileidDeleteInfoDo;
 import com.tencent.wxcloudrun.dto.FileidDeleteResponse;
+import com.tencent.wxcloudrun.model.SystemConfig;
 import com.tencent.wxcloudrun.service.AttachmentService;
 import com.tencent.wxcloudrun.utils.FileUtil;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
@@ -42,11 +45,7 @@ import java.util.*;
 public class AttachmentServiceImpl implements AttachmentService {
 
 
-    @Value("${weixin.secret}")
-    private String weixinSecret;
 
-    @Value("${weixin.appid}")
-    private String weixinAppId;
 
 
     @Value("${weixin.env}")
@@ -54,6 +53,10 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Value("${weixin.url}")
     private String weixinUrl;
+
+
+    @Autowired
+    private SystemConfigMapper systemConfigMapper;
 
 
 
@@ -66,7 +69,13 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public String weixinToken() {
         String token = "";
-        String tokenUrl = weixinUrl + "cgi-bin/token?grant_type=client_credential&appid=" + weixinAppId + "&secret=" + weixinSecret;
+        LambdaQueryWrapper<SystemConfig> systemConfigLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        systemConfigLambdaQueryWrapper.eq(SystemConfig::getSysConfigKey, "weixinAppid");
+        SystemConfig systemConfig = systemConfigMapper.selectOne(systemConfigLambdaQueryWrapper);
+        systemConfigLambdaQueryWrapper.clear();
+        systemConfigLambdaQueryWrapper.eq(SystemConfig::getSysConfigKey, "weixinSecret");
+        SystemConfig systemConfigSecret = systemConfigMapper.selectOne(systemConfigLambdaQueryWrapper);
+        String tokenUrl = weixinUrl + "cgi-bin/token?grant_type=client_credential&appid=" + systemConfig.getSysConfigValue() + "&secret=" + systemConfigSecret.getSysConfigValue();
         ResponseEntity<JSONObject> responseEntity = restTemplate.getForEntity(tokenUrl, JSONObject.class);
         if (responseEntity.getStatusCodeValue() == 200) {
             JSONObject body = responseEntity.getBody();

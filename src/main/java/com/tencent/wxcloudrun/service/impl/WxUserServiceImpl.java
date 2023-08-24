@@ -9,15 +9,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tencent.wxcloudrun.dao.SystemConfigMapper;
 import com.tencent.wxcloudrun.dao.WxUserMapper;
 import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.SysFile;
+import com.tencent.wxcloudrun.model.SystemConfig;
 import com.tencent.wxcloudrun.model.WxUser;
-import com.tencent.wxcloudrun.service.AttachmentService;
-import com.tencent.wxcloudrun.service.SysFileService;
-import com.tencent.wxcloudrun.service.TSerialNumberService;
-import com.tencent.wxcloudrun.service.WxUserService;
+import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,11 +38,7 @@ import java.util.Map;
 @Service
 public class WxUserServiceImpl implements WxUserService {
 
-    @Value("${weixin.secret}")
-    private String weixinSecret;
 
-    @Value("${weixin.appid}")
-    private String weixinAppId;
 
 
     @Value("${weixin.env}")
@@ -78,6 +73,9 @@ public class WxUserServiceImpl implements WxUserService {
     @Autowired
     private SysFileService fileService;
 
+    @Autowired
+    private SystemConfigMapper systemConfigMapper;
+
 
     /**
      * 微信登录wx.login获取的code
@@ -87,11 +85,16 @@ public class WxUserServiceImpl implements WxUserService {
      */
     @Override
     public Map<String,Object> queryWxUserInfo(String code) {
-
         Map<String,Object> map = new HashMap<>();
         map.put("openid", "");
         map.put("flag", false);
-        String url = weixinUrl + "sns/jscode2session?appid=" + weixinAppId + "&secret=" + weixinSecret + "&js_code=" + code + "&grant_type=authorization_code";
+        LambdaQueryWrapper<SystemConfig> systemConfigLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        systemConfigLambdaQueryWrapper.eq(SystemConfig::getSysConfigKey, "weixinAppid");
+        SystemConfig systemConfig = systemConfigMapper.selectOne(systemConfigLambdaQueryWrapper);
+        systemConfigLambdaQueryWrapper.clear();
+        systemConfigLambdaQueryWrapper.eq(SystemConfig::getSysConfigKey, "weixinSecret");
+        SystemConfig systemConfigSecret = systemConfigMapper.selectOne(systemConfigLambdaQueryWrapper);
+        String url = weixinUrl + "sns/jscode2session?appid=" + systemConfig.getSysConfigValue() + "&secret=" + systemConfigSecret.getSysConfigValue() + "&js_code=" + code + "&grant_type=authorization_code";
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if (responseEntity.getStatusCodeValue() == 200) {
             String body = responseEntity.getBody();

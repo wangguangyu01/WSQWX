@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.SystemConfigMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.SystemConfig">
+    <!--@mbg.generated-->
+    <!--@Table system_config-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sys_config_key" jdbcType="VARCHAR" property="sysConfigKey" />
+    <result column="sys_config_value" jdbcType="VARCHAR" property="sysConfigValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, sys_config_key, sys_config_value
+  </sql>
+</mapper>

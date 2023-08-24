@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.controller;
 import com.alibaba.fastjson.JSON;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dao.WxActivityMapper;
+import com.tencent.wxcloudrun.dto.WeiXinParamDTO;
 import com.tencent.wxcloudrun.dto.WxActivityDTO;
 import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.model.OderPay;
@@ -37,11 +38,7 @@ public class WxActivityController {
     @Autowired
     private PayService payService;
 
-    @Value("${weixin.appid}")
-    private String weixinAppId;
 
-    @Value("${weixin.cert.key}")
-    private String certKey;
 
 
     @PostMapping(value = "/api/addWxActivity")
@@ -75,14 +72,15 @@ public class WxActivityController {
                 if (oderPay.getPaySuccess() == 2) {
                     ApiResponse.error("您已经成功报名");
                 } else if (oderPay.getPaySuccess() == 1) {
+                    WeiXinParamDTO weiXinParamDTO = payService.queryWeiXinParam();
                     TreeMap<String, Object> treeMap = new TreeMap<>();
-                    treeMap.put("appId", weixinAppId);
+                    treeMap.put("appId", weiXinParamDTO.getWeixinAppid());
                     treeMap.put("timeStamp", oderPay.getPayTimestamp());
                     treeMap.put("nonceStr", oderPay.getPayNoncestr());
                     treeMap.put("package", oderPay.getPrepayId());
                     treeMap.put("signType", "MD5");
                     String signA = StringUtils.join(treeMap.entrySet(), "&");
-                    signA += "&key=" + certKey;
+                    signA += "&key=" + weiXinParamDTO.getCertKey();
                     String sgin = MD5Utils.encryptNoWithSalt(signA);
                     treeMap.put("paySign", sgin);
                     treeMap.remove("appId");

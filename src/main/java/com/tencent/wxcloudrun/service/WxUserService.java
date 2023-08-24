@@ -1,5 +1,7 @@
 package com.tencent.wxcloudrun.service;
 
+import cn.hutool.crypto.SmUtil;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.dto.CategoriesRequest;
 import com.tencent.wxcloudrun.dto.WxUserDto;
@@ -11,6 +13,8 @@ import com.tencent.wxcloudrun.model.WxUser;
 import java.util.Map;
 
 public interface WxUserService {
+
+
 
     /**
      * 微信登录wx.login获取的code

@@ -18,10 +18,7 @@ import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.model.TSerialNumber;
 import com.tencent.wxcloudrun.model.WxBrowsingUsers;
 import com.tencent.wxcloudrun.model.WxUser;
-import com.tencent.wxcloudrun.service.AttachmentService;
-import com.tencent.wxcloudrun.service.TSerialNumberService;
-import com.tencent.wxcloudrun.service.WxBrowsingUsersService;
-import com.tencent.wxcloudrun.service.WxUserService;
+import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import com.tencent.wxcloudrun.utils.MD5Utils;
 import com.tencent.wxcloudrun.utils.UUIDGenerator;
@@ -56,11 +53,12 @@ public class WxCloudRunApplicationTest {
     @Autowired
     private CountersMapper countersMapper;
 
-    @Value("${weixin.secret}")
-    private String secret;
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private PayService payService;
 
 
 
@@ -105,7 +103,7 @@ public class WxCloudRunApplicationTest {
     @Test
     public void testpwd() throws Exception {
         SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
-        String decryptStr = sm4.encryptHex("123432csafsdds",  CharsetUtil.CHARSET_UTF_8);
+        String decryptStr = sm4.encryptHex("gundan7890321gundan7890321123456",  CharsetUtil.CHARSET_UTF_8);
         System.out.println(decryptStr);
         String encrypt = sm4.decryptStr(decryptStr, CharsetUtil.CHARSET_UTF_8);
         System.out.println(encrypt);
@@ -154,7 +152,8 @@ public class WxCloudRunApplicationTest {
     @Test
     public void testSm4() throws Exception {
         SymmetricCrypto sm4 =  SmUtil.sm4(slatKey.getBytes());
-        String dd  = sm4.decryptStr("f9e6a7da85ff52b1dd041c170f8fc27d690ccd6cc59b3bffe22d2d684a39df19");
+        String dd  = sm4.decryptStr("e34a333bc1e68d68ba8d4b7a74afbf346bbaa867136be3a31b6131f2b57efa424798ae9a8cdffebd1171381e75c5f42b");
+
         System.out.println(dd);
     }
 
@@ -260,5 +259,13 @@ public class WxCloudRunApplicationTest {
         Page page = new Page(wxPersonalBrowsePageDTO.getCurrentPage(), wxPersonalBrowsePageDTO.getLimit());
         IPage<WxUserBrowsingUsersVo> wxUserIPage = wxBrowsingUsersMapper.queryBrowsingUsersPage( page,wxPersonalBrowsePageDTO);
         System.out.println(wxUserIPage.getRecords().size());
+    }
+
+
+    @Test
+    public void testqueryWeiXinParam() {
+        WeiXinParamDTO weiXinParamDTO =  payService.queryWeiXinParam();
+        System.out.println(weiXinParamDTO);
+
     }
 }

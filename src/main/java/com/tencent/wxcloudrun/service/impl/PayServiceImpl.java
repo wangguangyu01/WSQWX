@@ -4,6 +4,7 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tencent.wxcloudrun.dao.*;
 import com.tencent.wxcloudrun.dto.UnifiedorderDto;
+import com.tencent.wxcloudrun.dto.WeiXinParamDTO;
 import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.OderPayService;
 import com.tencent.wxcloudrun.service.PayService;
@@ -11,6 +12,7 @@ import com.tencent.wxcloudrun.service.TSerialNumberService;
 import com.tencent.wxcloudrun.utils.*;
 import jodd.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +36,7 @@ import java.util.*;
 public class PayServiceImpl implements PayService {
 
 
-    @Value("${weixin.mchid}")
-    private String mchid;
 
-
-    @Value("${weixin.cert.key}")
-    private String certKey;
-
-
-    @Value("${weixin.appid}")
-    private String weixinAppId;
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
@@ -77,16 +70,43 @@ public class PayServiceImpl implements PayService {
     @Autowired
     public RestTemplate restTemplate;
 
+
+    @Autowired
+    private SystemConfigMapper systemConfigMapper;
+
+
+    @Override
+    public WeiXinParamDTO queryWeiXinParam() {
+        WeiXinParamDTO weiXinParamDTO = new WeiXinParamDTO();
+        List<SystemConfig> systemConfigList = systemConfigMapper.selectList(null);
+        if (CollectionUtils.isNotEmpty(systemConfigList)) {
+
+            for (SystemConfig systemConfig : systemConfigList) {
+                if (StringUtils.equals(systemConfig.getSysConfigKey(), "weixinAppid")) {
+                    weiXinParamDTO.setWeixinAppid(systemConfig.getSysConfigValue());
+                }
+                if (StringUtils.equals(systemConfig.getSysConfigKey(), "weixinMchid")) {
+                    weiXinParamDTO.setMchid(systemConfig.getSysConfigValue());
+                }
+                if (StringUtils.equals(systemConfig.getSysConfigKey(), "weixinCertKey")) {
+                    weiXinParamDTO.setCertKey(systemConfig.getSysConfigValue());
+                }
+            }
+        }
+        return weiXinParamDTO;
+    }
+
+
     /**
      * 生成订单保存到数据库中
      *
      * @param openId
-     * @param payType
-     *       1:认证会员充值；2：参加活动；3普通会员浏览资料费用
+     * @param payType 1:认证会员充值；2：参加活动；3普通会员浏览资料费用
      * @return
      */
     @Override
-    public Map<String, Object> unifiedOrder(String openId, int payType, String requestIp,  String activityUuid) throws Exception {
+    public Map<String, Object> unifiedOrder(String openId, int payType, String requestIp, String activityUuid) throws Exception {
+        WeiXinParamDTO weiXinParamDTO = this.queryWeiXinParam();
         String body = "大卫维尼-缴费";
         String priceStr = "";
         String nonceStr = NonceStrUtil.generateNonceStr();
@@ -102,11 +122,11 @@ public class PayServiceImpl implements PayService {
             attach = "会员充值";
         } else if (payType == 2) {
             BlogContent blogContent = blogContentMapper.selectById(activityUuid);
-             if (Objects.nonNull(blogContent)) {
-                 priceStr = String.valueOf(blogContent.getPrice());
-                 body = "大卫维尼-活动报名费用";
-                 attach = "参加活动名称: "+blogContent.getTitle();
-             }
+            if (Objects.nonNull(blogContent)) {
+                priceStr = String.valueOf(blogContent.getPrice());
+                body = "大卫维尼-活动报名费用";
+                attach = "参加活动名称: " + blogContent.getTitle();
+            }
         } else if (payType == 3) {
             // 查询配置中的会员费用
             LambdaQueryWrapper<WxUser> wxUserLambdaQueryWrapper = new LambdaQueryWrapper();
@@ -122,10 +142,10 @@ public class PayServiceImpl implements PayService {
         }
         UnifiedorderDto unifiedorderDto = UnifiedorderDto
                 .builder()
-                .appid(weixinAppId)
+                .appid(weiXinParamDTO.getWeixinAppid())
                 .attach(attach)
                 .body(body)
-                .mch_id(mchid)
+                .mch_id(weiXinParamDTO.getMchid())
                 .nonce_str(nonceStr)
                 .sign_type("MD5")
                 .notify_url(notify_url)
@@ -135,7 +155,7 @@ public class PayServiceImpl implements PayService {
                 .total_fee(priceStr)
                 .fee_type("CNY")
                 .trade_type("JSAPI")
-                .key(certKey)
+                .key(weiXinParamDTO.getCertKey())
                 .build();
         String xml = UnifiedorderDto.buildXml(unifiedorderDto);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -145,20 +165,20 @@ public class PayServiceImpl implements PayService {
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
         String xmlResponse = restTemplate.postForObject(unifiedOrderUrl, new HttpEntity<>(xml, httpHeaders), String.class);
         log.info("unifiedOrder xmlResponse --->{}", xmlResponse);
-        Date  currenttime = new  Date();
+        Date currenttime = new Date();
         Long timeStamp = System.currentTimeMillis() / 1000;
         Map<String, String> map = XmlToStringUtil.xmlToMap(xmlResponse);
         if (StringUtils.equals((String) map.get("return_code"), "SUCCESS")
                 && StringUtils.equals((String) map.get("result_code"), "SUCCESS")) {
             String prepay_id = (String) map.get("prepay_id");
             TreeMap<String, Object> treeMap = new TreeMap<>();
-            treeMap.put("appId", weixinAppId);
+            treeMap.put("appId", weiXinParamDTO.getWeixinAppid());
             treeMap.put("timeStamp", timeStamp);
             treeMap.put("nonceStr", nonceStr);
-            treeMap.put("package", "prepay_id="+ prepay_id);
+            treeMap.put("package", "prepay_id=" + prepay_id);
             treeMap.put("signType", "MD5");
             String signA = StringUtils.join(treeMap.entrySet(), "&");
-            signA += "&key=" + certKey;
+            signA += "&key=" + weiXinParamDTO.getCertKey();
             String sgin = MD5Utils.encryptNoWithSalt(signA);
             treeMap.put("paySign", sgin);
             treeMap.remove("appId");
@@ -197,7 +217,7 @@ public class PayServiceImpl implements PayService {
             treeMap.put("package", prepay_id);
             // 用于金额的显示
             BigDecimal decimal = NumberUtils.createBigDecimal(priceStr);
-            BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
+            BigDecimal bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
             treeMap.put("price", String.valueOf(bigDecimal));
             log.info("unifiedOrder--->{}", JacksonUtils.toJson(treeMap));
             return treeMap;
@@ -226,7 +246,7 @@ public class PayServiceImpl implements PayService {
             randomInt = randomInt + 1;
         }
         String out_trade_no = tSerialNumberService.createSerialNumber();
-        String orderNo = StringUtils.substring(nonceStr, 0,randomInt);
+        String orderNo = StringUtils.substring(nonceStr, 0, randomInt);
         out_trade_no = out_trade_no + orderNo;
         return out_trade_no;
     }
