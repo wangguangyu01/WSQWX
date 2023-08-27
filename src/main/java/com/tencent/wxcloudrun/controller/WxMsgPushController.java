@@ -16,7 +16,7 @@ public class WxMsgPushController {
 
     @RequestMapping("/api/getPushMsgInfo")
     public ApiResponse getPushMsgInfo(@RequestBody Map<String,Object> map){
-
+        log.info("getPushMsgInfo map --->{}", map);
         return ApiResponse.ok();
     }
 }
