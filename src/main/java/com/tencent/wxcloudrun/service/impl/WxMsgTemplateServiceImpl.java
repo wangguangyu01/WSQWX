@@ -79,7 +79,7 @@ public class WxMsgTemplateServiceImpl extends ServiceImpl<WxMsgTemplateMapper, W
                     .miniprogram(wxMsgTemplate.getMiniprogram())
                     .url(wxMsgTemplate.getUrl())
                     .data(wxMsgTemplate.getData())
-                    .sendResult(NumberUtils.toInt(String.valueOf(jsonObjectData.get("errcode"))))
+                    .sendResult(String.valueOf(jsonObjectData.get("errcode")))
                     .sendTime(new Date())
                     .touser(openId)
                     .build();
