@@ -300,26 +300,30 @@ public class WxUserServiceImpl implements WxUserService {
 
 
     @Override
-    public WxUser addOrUpdateWxUser(WxUserDto wxUserDto) {
+    public WxUser addOrUpdateWxUser(WxUserDto wxUserDto)  {
         WxUser wxUser = new WxUser();
-        BeanUtils.copyProperties(wxUserDto, wxUser);
-        wxUser.setApprove("2");
-        WxUser wxUserObj = this.queryWxUserOne(wxUser.getOpenId());
-        int count = this.queryPhoneCount(wxUser.getPhone());
-        if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
-            String serialNumber = tSerialNumberService.createSerialNumber();
-            wxUser.setSerialNumber(serialNumber);
-            this.addWxUser(wxUser);
-            if (!ObjectUtils.isEmpty(wxUser)) {
+        try {
+            BeanUtils.copyProperties(wxUserDto, wxUser);
+            wxUser.setApprove("2");
+            WxUser wxUserObj = this.queryWxUserOne(wxUser.getOpenId());
+            int count = this.queryPhoneCount(wxUser.getPhone());
+            if (ObjectUtils.isEmpty(wxUserObj) && count == 0) {
+                String serialNumber = tSerialNumberService.createSerialNumber();
+                wxUser.setSerialNumber(serialNumber);
+                this.addWxUser(wxUser);
+                if (!ObjectUtils.isEmpty(wxUser)) {
+                    updateHeadImagUrl(wxUser);
+                }
+            } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
+                this.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
                 updateHeadImagUrl(wxUser);
+                this.updateWxUser(wxUser);
+            } else if (!ObjectUtils.isEmpty(wxUserObj)) {
+                updateHeadImagUrl(wxUser);
+                this.updateWxUser(wxUser);
             }
-        } else if (ObjectUtils.isEmpty(wxUserObj) && count > 0) {
-            this.updateByPhone(wxUserDto.getOpenId(), wxUserDto.getPhone());
-            updateHeadImagUrl(wxUser);
-            this.updateWxUser(wxUser);
-        } else if (!ObjectUtils.isEmpty(wxUserObj)) {
-            updateHeadImagUrl(wxUser);
-            this.updateWxUser(wxUser);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return wxUser;
     }

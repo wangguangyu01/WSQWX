@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.WxMsgTemplateMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxMsgTemplate">
+    <!--@mbg.generated-->
+    <!--@Table wx_msg_template-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="appid" jdbcType="CHAR" property="appid" />
+    <result column="template_id" jdbcType="VARCHAR" property="templateId" />
+    <result column="template_type" jdbcType="INTEGER" property="templateType" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="data" jdbcType="LONGVARCHAR" property="data" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="miniprogram" jdbcType="LONGVARCHAR" property="miniprogram" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, appid, template_id, template_type, `name`, title, content, `data`, url, miniprogram,
+    `status`, update_time
+  </sql>
+</mapper>

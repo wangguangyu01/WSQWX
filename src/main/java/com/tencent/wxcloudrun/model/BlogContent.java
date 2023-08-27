@@ -146,4 +146,13 @@ public class BlogContent {
 
     @TableField(exist = false)
     private double  priceDouble;
+
+
+    /**
+     * 是否有效
+     * 0：有效
+     * 1：过期
+     */
+    @TableField(value = "staleDated")
+    private String staleDated;
 }

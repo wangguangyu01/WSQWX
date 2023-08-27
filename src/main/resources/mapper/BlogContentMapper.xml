@@ -13,6 +13,7 @@
         <result column="type" jdbcType="VARCHAR" property="type"/>
         <result column="tags" jdbcType="VARCHAR" property="tags"/>
         <result column="categories" jdbcType="VARCHAR" property="categories"/>
+        <result column="staleDated" jdbcType="VARCHAR" property="staleDated"/>
         <result column="hits" jdbcType="INTEGER" property="hits"/>
         <result column="comments_num" jdbcType="INTEGER" property="commentsNum"/>
         <result column="allow_comment" jdbcType="INTEGER" property="allowComment"/>
@@ -26,7 +27,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        uuid, title, price, slug, created, modified, content, `type`, tags, categories, hits,
+        uuid, title, price, slug, created, modified, content, `type`, tags, categories, staleDated, hits,
         comments_num, allow_comment, allow_ping, allow_feed, `status`, author, gtm_create,
         gtm_modified
     </sql>

@@ -6,13 +6,12 @@ import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.*;
-import com.tencent.wxcloudrun.model.OderPay;
-import com.tencent.wxcloudrun.model.WxBrowsingUsers;
-import com.tencent.wxcloudrun.model.WxPersonalBrowse;
-import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -25,6 +24,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.sax.SAXResult;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
@@ -51,6 +51,15 @@ public class PayConttoller  {
     @Autowired
     private WxPersonalBrowseService wxPersonalBrowseService;
 
+    @Autowired
+    private WxMsgTemplateService wxMsgTemplateService;
+
+    @Autowired
+    private WxActivityService wxActivityService;
+
+    @Autowired
+    private BlogContentService blogContentService;
+
 
 
     @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
@@ -65,11 +74,11 @@ public class PayConttoller  {
                 oderPay.setPaySuccess(2);
                 oderPay.setTransactionId(requestDTO.getTransaction_id());
                 oderPayService.updateById(oderPay);
-                if (oderPay.getPayType() == 1) {
+                if (oderPay.getPayType() == 1 && oderPay.getPaySuccess() == 2) {
                     WxUser wxUser = wxUserService.queryWxUserOne(oderPay.getOpenId());
                     wxUser.setAuthentication("1");
                     wxUserService.updateWxUser(wxUser);
-                } else if (oderPay.getPayType() == 3) {
+                } else if (oderPay.getPayType() == 3 && oderPay.getPaySuccess() == 2) {
                     // 普通会员浏览资料费用
                     LambdaQueryWrapper<WxPersonalBrowse> browseLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     browseLambdaQueryWrapper.eq(WxPersonalBrowse::getTradeNo, requestDTO.getOut_trade_no());
@@ -85,6 +94,26 @@ public class PayConttoller  {
                             wxBrowsingUsersService.updateById(wxBrowsingUsers);
                         }
 
+                    }
+                } else if (oderPay.getPayType() == 2 && oderPay.getPaySuccess() == 2) {
+                    // 查询活动报名成功的模板
+                    WxMsgTemplate wxMsgTemplate = wxMsgTemplateService.queryOne(3);
+                    if (!ObjectUtils.isEmpty(wxMsgTemplate)) {
+                        LambdaQueryWrapper<WxActivity> activityLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                        activityLambdaQueryWrapper.eq(WxActivity::getTradeNo, oderPay.getTradeNo());
+                        List<WxActivity> wxActivities = wxActivityService.list(activityLambdaQueryWrapper);
+                        if (CollectionUtils.isNotEmpty(wxActivities)) {
+                            String url = wxMsgTemplate.getUrl();
+                            url = StringUtils.replace(url, "{url}", wxActivities.get(0).getActivityUuid());
+                            BlogContent blogContent = blogContentService.queryBlogContentInfo(wxActivities.get(0).getActivityUuid());
+                            wxMsgTemplate.setUrl(url);
+                            String data = wxMsgTemplate.getData();
+                            data = StringUtils.replace(data, "活动名称", blogContent.getContent());
+                            data = StringUtils.replace(data, "与会嘉宾", wxActivities.get(0).getNickname());
+                            wxMsgTemplate.setData(data);
+                            wxMsgTemplateService.sendWxMsg(oderPay.getOpenId(), wxMsgTemplate);
+                            wxMsgTemplateService.sendWxMsg("o0orR5CXlh4fpa9WDvio5KU94dRo", wxMsgTemplate);
+                        }
                     }
                 }
             }

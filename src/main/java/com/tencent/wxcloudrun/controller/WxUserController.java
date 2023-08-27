@@ -11,6 +11,7 @@ import com.tencent.wxcloudrun.dto.WxUserDto;
 import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.*;
+import com.tencent.wxcloudrun.utils.DateUtils;
 import com.tencent.wxcloudrun.vo.WxUserPowerVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,6 +57,10 @@ public class WxUserController {
     private SysFileService fileService;
 
 
+    @Autowired
+    private WxMsgTemplateService wxMsgTemplateService;
+
+
     @PostMapping(value = "/api/checkWxUser")
     public ApiResponse checkWxUser(@RequestBody WxUserCodeDto code) {
         Map<String, Object> map = wxUserService.queryWxUserInfo(code.getCode());
@@ -70,7 +75,20 @@ public class WxUserController {
                 return ApiResponse.error("缺少注册用户信息");
             }
             log.info("addWxUser wxUserDto--->{}", JSON.toJSONString(wxUserDto));
-            WxUser wxUser =wxUserService.addOrUpdateWxUser(wxUserDto);
+            WxUser wxUser = wxUserService.addOrUpdateWxUser(wxUserDto);
+            if (StringUtils.isNotBlank(wxUser.getOpenId())) {
+                WxMsgTemplate wxMsgTemplate = wxMsgTemplateService.queryOne(1);
+                String data = wxMsgTemplate.getData();
+                data = StringUtils.replace(data, "审核事项", wxUser.getWxNumber() + "注册成功等待审核");
+                data = StringUtils.replace(data, "申请时间(2019-10-20 21:00:00)", DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+                data = StringUtils.replace(data, "申请人", wxUser.getNickname());
+                data = StringUtils.replace(data, "备注",  "审核时间大约在1到7天内完成");
+                wxMsgTemplate.setData(data);
+                wxMsgTemplateService.sendWxMsg(wxUser.getOpenId(), wxMsgTemplate);
+                data = StringUtils.replace(data, "审核时间大约在1到7天内完成", "请尽快审核");
+                wxMsgTemplate.setData(data);
+                wxMsgTemplateService.sendWxMsg("o0orR5CXlh4fpa9WDvio5KU94dRo", wxMsgTemplate);
+            }
             return ApiResponse.ok(wxUser);
         } catch (Exception e) {
             e.printStackTrace();
