@@ -1,6 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dao.WxActivityMapper;
 import com.tencent.wxcloudrun.dto.WeiXinParamDTO;
@@ -72,23 +73,11 @@ public class WxActivityController {
                 if (oderPay.getPaySuccess() == 2) {
                     ApiResponse.error("您已经成功报名");
                 } else if (oderPay.getPaySuccess() == 1) {
-                    WeiXinParamDTO weiXinParamDTO = payService.queryWeiXinParam();
-                    TreeMap<String, Object> treeMap = new TreeMap<>();
-                    treeMap.put("appId", weiXinParamDTO.getWeixinAppid());
-                    treeMap.put("timeStamp", oderPay.getPayTimestamp());
-                    treeMap.put("nonceStr", oderPay.getPayNoncestr());
-                    treeMap.put("package", oderPay.getPrepayId());
-                    treeMap.put("signType", "MD5");
-                    String signA = StringUtils.join(treeMap.entrySet(), "&");
-                    signA += "&key=" + weiXinParamDTO.getCertKey();
-                    String sgin = MD5Utils.encryptNoWithSalt(signA);
-                    treeMap.put("paySign", sgin);
-                    treeMap.remove("appId");
-                    String prepay_id = oderPay.getPrepayId();
-                    prepay_id = StringUtils.substring(prepay_id, StringUtils.indexOf(prepay_id, "=")+1);
-                    treeMap.put("package", prepay_id);
+                    wxActivityService.removeById(wxActivity.getId());
+                    payService.deleteOderPay(oderPay.getTradeNo());
+                    map = wxActivityService.activityOrder(wxActivityDTO);
                     map.put("activityUuid", wxActivityDTO.getActivityUuid());
-                    return ApiResponse.ok(treeMap);
+                    return ApiResponse.ok(map);
                 }
             }
         } catch (Exception e) {

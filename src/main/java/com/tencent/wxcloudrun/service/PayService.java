@@ -28,4 +28,12 @@ public interface PayService {
 
 
     public WeiXinParamDTO queryWeiXinParam();
+
+
+    /**
+     * 删除订单
+     * @param tradeNo
+     * @return
+     */
+    public boolean deleteOderPay(String tradeNo);
 }

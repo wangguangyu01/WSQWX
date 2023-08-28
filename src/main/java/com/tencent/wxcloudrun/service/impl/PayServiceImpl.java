@@ -234,6 +234,13 @@ public class PayServiceImpl implements PayService {
     }
 
 
+    @Override
+    public boolean deleteOderPay(String tradeNo) {
+        LambdaQueryWrapper<OderPay> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OderPay::getTradeNo, tradeNo);
+        return oderPayService.remove(queryWrapper);
+    }
+
     /**
      * redis生成的序列号加随机字符串
      * 生成订单号
