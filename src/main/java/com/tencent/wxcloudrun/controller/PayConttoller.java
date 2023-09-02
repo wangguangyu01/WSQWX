@@ -151,7 +151,7 @@ public class PayConttoller  {
 
 
     @PostMapping("/api/returnPlay")
-    public ApiResponse returnPlay(@RequestBody ResponseReturnDTO responseReturnDTO) {
+    public ApiResponse returnPlay(@RequestBody Map<String, Object> responseReturnDTO) {
 
         log.info("returnPlay-->{}", responseReturnDTO);
         return ApiResponse.ok();
