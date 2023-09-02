@@ -69,10 +69,11 @@ public class WxMsgTemplateServiceImpl extends ServiceImpl<WxMsgTemplateMapper, W
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(JSONObject.toJSONString(body), httpHeaders);
-        ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(fileUploadUrl, request, JSONObject.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(fileUploadUrl, request, String.class);
         log.info("sendWxMsg---->{}", responseEntity);
+
         if (responseEntity.getStatusCodeValue() == 200) {
-            JSONObject jsonObjectData = responseEntity.getBody();
+            JSONObject jsonObjectData = JSONObject.parseObject(responseEntity.getBody());
             wxTemplateMsgLog = WxTemplateMsgLog.builder().templateId(wxMsgTemplate.getTemplateId())
                     .templateType(wxMsgTemplate.getTemplateType())
                     .appid(wxMsgTemplate.getAppid())

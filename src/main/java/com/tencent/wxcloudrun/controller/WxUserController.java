@@ -79,7 +79,7 @@ public class WxUserController {
             if (StringUtils.isNotBlank(wxUser.getOpenId())) {
                 WxMsgTemplate wxMsgTemplate = wxMsgTemplateService.queryOne(1);
                 String data = wxMsgTemplate.getData();
-                data = StringUtils.replace(data, "审核事项", wxUser.getWxNumber() + "已注册等待审核");
+                data = StringUtils.replace(data, "审核事项", "用户"+wxUser.getPhone() + "等待审核");
                 data = StringUtils.replace(data, "申请时间(2019-10-20 21:00:00)", DateUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
                 data = StringUtils.replace(data, "申请人", wxUser.getNickname());
                 data = StringUtils.replace(data, "备注",  "审核时间大约在1到7天内完成");
