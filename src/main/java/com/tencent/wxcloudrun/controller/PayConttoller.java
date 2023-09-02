@@ -136,6 +136,7 @@ public class PayConttoller  {
                 return ApiResponse.ok(map);
             }
             if (!StringUtils.equals(wxUser.getApprove(), "0")) {
+                map.put("price", "0");
                 return ApiResponse.ok(map);
             }
             log.info("placeOrder payOrderDo ---> {}", payOrderDo);
