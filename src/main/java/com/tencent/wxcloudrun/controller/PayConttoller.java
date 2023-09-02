@@ -20,10 +20,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.sax.SAXResult;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -152,9 +155,28 @@ public class PayConttoller  {
 
 
     @PostMapping("/api/returnPlay")
-    public ApiResponse returnPlay(@RequestBody Map<String, Object> responseReturnDTO) {
+    public ApiResponse returnPlay(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BufferedReader reader = null;
+        try {
+            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Signature"));
+            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Timestamp"));
+            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Nonce"));
+            StringBuffer stringBuffer = new StringBuffer();
+            reader = request.getReader();
+            String line = "";
+            while (null != (line = reader.readLine())) {
+                stringBuffer.append(line);
+            }
+            String data = stringBuffer.toString();
+            log.info("returnPlay data--->{}", data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+        }
 
-        log.info("returnPlay-->{}", responseReturnDTO);
         return ApiResponse.ok();
     }
 
