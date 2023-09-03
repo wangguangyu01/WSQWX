@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -188,12 +189,6 @@ public class PayConttoller {
     public WxApiResponse returnPlay(HttpServletRequest request, HttpServletResponse response) throws IOException {
         BufferedReader reader = null;
         try {
-            Enumeration<String> enumeration = request.getHeaderNames();
-            while (enumeration.hasMoreElements()) {
-                String name = enumeration.nextElement();
-                log.info("enumeration.nextElement headerName--->{}", name);
-                log.info("enumeration.nextElement headerName value--->{}", request.getHeader(name));
-            }
             StringBuffer stringBuffer = new StringBuffer();
             reader = request.getReader();
             String line = "";
@@ -218,10 +213,11 @@ public class PayConttoller {
             LambdaQueryWrapper<SystemConfig> api3KeyWrapper = new LambdaQueryWrapper<>();
             api3KeyWrapper.eq(SystemConfig::getSysConfigKey, "weixinCertKeyApi3");
             SystemConfig api3Key = systemConfigService.getOne(api3KeyWrapper);
-
-            File file = resourceLoader.getResource("classpath:mchidCert/apiclient_key.pem").getFile();
-            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(file));
             log.info("获取的路径地址::" + context.getRealPath("/apiclient_key.pem"));
+
+            org.springframework.core.io.Resource resource = new ClassPathResource("mchidCert/" + "apiclient_key.pem");
+            File file = resource.getFile();
+            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(file));
             NotificationConfig config = new RSAAutoCertificateConfig.Builder()
                     .merchantId(merchanCofig.getSysConfigValue())
                     .privateKey(privateKey)
