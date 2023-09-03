@@ -286,6 +286,7 @@ public class WxCloudRunApplicationTest {
         if (Status.SUCCESS.equals(status)) {
             System.out.println("4444");
         }
+        System.out.println(status.name());
     }
 
 

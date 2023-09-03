@@ -64,17 +64,25 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
         if (StringUtils.isNotBlank(transaction.getSuccessTime())) {
             successTime = DateUtils.parseDateTime(transaction.getSuccessTime(), DateUtils.DATE_TIME_PATTERN);
         }
+        String channel = "";
+        if (!ObjectUtils.isEmpty(transaction.getChannel())) {
+            channel = transaction.getChannel().name();
+        }
+        String fundsAccount = "";
+        if (!ObjectUtils.isEmpty(transaction.getFundsAccount())) {
+            fundsAccount = transaction.getFundsAccount().name();
+        }
         //保存退款记录
         OderPayReturn oderPayReturn = OderPayReturn.builder()
                 .returnCreateTime(returnCreateTime)
-                .channel(transaction.getChannel().name())
+                .channel(channel)
                 .outRefundNo(transaction.getOutRefundNo())
                 .outTradeNo(transaction.getOutTradeNo())
                 .transactionId(transaction.getTransactionId())
                 .refundId(transaction.getRefundId())
                 .userReceivedAccount(transaction.getUserReceivedAccount())
                 .successTime(successTime)
-                .fundsAccount(transaction.getFundsAccount().name())
+                .fundsAccount(fundsAccount)
                 .status(transaction.getRefundStatus().name())
                 .build();
         oderPayReturn.parseAmount(transaction.getAmount());
