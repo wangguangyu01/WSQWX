@@ -31,7 +31,7 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
 
     @Override
     public void saveOderPayReturn(RefundNotification transaction) throws Exception {
-        if (!ObjectUtils.isEmpty(transaction)) {
+        if (ObjectUtils.isEmpty(transaction)) {
              return;
         }
 
