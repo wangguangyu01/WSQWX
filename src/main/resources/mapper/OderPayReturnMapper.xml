@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.OderPayReturnMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.OderPayReturn">
+    <!--@mbg.generated-->
+    <!--@Table oder_pay_return-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="refund_id" jdbcType="VARCHAR" property="refundId" />
+    <result column="out_refund_no" jdbcType="VARCHAR" property="outRefundNo" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+    <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="user_received_account" jdbcType="VARCHAR" property="userReceivedAccount" />
+    <result column="success_time" jdbcType="TIMESTAMP" property="successTime" />
+    <result column="return_create_time" jdbcType="TIMESTAMP" property="returnCreateTime" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="funds_account" jdbcType="VARCHAR" property="fundsAccount" />
+    <result column="amount_total" jdbcType="BIGINT" property="amountTotal" />
+    <result column="amount_refund" jdbcType="BIGINT" property="amountRefund" />
+    <result column="amount_payer_total" jdbcType="BIGINT" property="amountPayerTotal" />
+    <result column="amount_payer_refund" jdbcType="BIGINT" property="amountPayerRefund" />
+    <result column="amount_settlement_refund" jdbcType="BIGINT" property="amountSettlementRefund" />
+    <result column="amount_settlement_total" jdbcType="BIGINT" property="amountSettlementTotal" />
+    <result column="amount_discount_refund" jdbcType="BIGINT" property="amountDiscountRefund" />
+    <result column="amount_currency" jdbcType="VARCHAR" property="amountCurrency" />
+    <result column="amount_refund_fee" jdbcType="BIGINT" property="amountRefundFee" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, refund_id, out_refund_no, transaction_id, out_trade_no, channel, user_received_account, 
+    success_time, return_create_time, `status`, funds_account, amount_total, amount_refund, 
+    amount_payer_total, amount_payer_refund, amount_settlement_refund, amount_settlement_total, 
+    amount_discount_refund, amount_currency, amount_refund_fee
+  </sql>
+</mapper>

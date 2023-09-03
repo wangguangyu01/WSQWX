@@ -28,6 +28,7 @@ import com.tencent.wxcloudrun.vo.WxUserBrowsingUsersVo;
 import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import com.wechat.pay.java.core.cipher.PrivacyDecryptor;
 import com.wechat.pay.java.core.cipher.RSAPrivacyDecryptor;
+import com.wechat.pay.java.service.refund.model.Status;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -281,9 +282,10 @@ public class WxCloudRunApplicationTest {
 
     @Test
     public void testqueryWeiXinParam() {
-        WeiXinParamDTO weiXinParamDTO =  payService.queryWeiXinParam();
-        System.out.println(weiXinParamDTO);
-
+        Status status = Status.valueOf("SUCCESS");
+        if (Status.SUCCESS.equals(status)) {
+            System.out.println("4444");
+        }
     }
 
 

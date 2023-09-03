@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.OaNotifyRecordMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.OaNotifyRecord">
+    <!--@mbg.generated-->
+    <!--@Table oa_notify_record-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="notify_id" jdbcType="BIGINT" property="notifyId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="is_read" jdbcType="BOOLEAN" property="isRead" />
+    <result column="read_date" jdbcType="DATE" property="readDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, notify_id, user_id, is_read, read_date
+  </sql>
+</mapper>

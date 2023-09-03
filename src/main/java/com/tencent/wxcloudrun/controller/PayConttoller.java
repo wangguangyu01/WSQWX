@@ -20,6 +20,7 @@ import com.wechat.pay.java.core.notification.NotificationConfig;
 import com.wechat.pay.java.core.notification.NotificationParser;
 import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
 import com.wechat.pay.java.service.refund.model.RefundNotification;
+import com.wechat.pay.java.service.refund.model.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -96,6 +97,9 @@ public class PayConttoller {
 
     @Autowired
     private ServletContext context;
+
+    @Resource
+    private OderPayReturnService oderPayReturnService;
 
 
     @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
@@ -229,6 +233,10 @@ public class PayConttoller {
                 // 以支付通知回调为例，验签、解密并转换成 Transaction
                 RefundNotification transaction = parser.parse(requestParam, RefundNotification.class);
                 log.info("RefundNotification--- >{}", transaction);
+                Status status = transaction.getRefundStatus();
+                if (status.equals(Status.SUCCESS)) {
+                    oderPayReturnService.saveOderPayReturn(transaction);
+                }
             } catch (ValidationException e) {
                 // 签名验证失败，返回 401 UNAUTHORIZED 状态码
                 log.error("sign verification failed", e);
