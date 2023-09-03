@@ -213,7 +213,7 @@ public class PayConttoller {
             LambdaQueryWrapper<SystemConfig> api3KeyWrapper = new LambdaQueryWrapper<>();
             api3KeyWrapper.eq(SystemConfig::getSysConfigKey, "weixinCertKeyApi3");
             SystemConfig api3Key = systemConfigService.getOne(api3KeyWrapper);
-            log.info("获取的路径地址::" + context.getRealPath("/apiclient_key.pem"));
+            log.info("获取的路径地址::" + context.getRealPath("/mchidCert/apiclient_key.pem"));
             org.springframework.core.io.Resource  resource = resourceLoader.getResource("classpath:mchidCert/apiclient_key.pem");
             PrivateKey privateKey = PemUtil.loadPrivateKey(resource.getInputStream());
             NotificationConfig config = new RSAAutoCertificateConfig.Builder()
@@ -228,12 +228,13 @@ public class PayConttoller {
             try {
                 // 以支付通知回调为例，验签、解密并转换成 Transaction
                 RefundNotification transaction = parser.parse(requestParam, RefundNotification.class);
-
+                log.info("RefundNotification--- >{}", transaction);
             } catch (ValidationException e) {
                 // 签名验证失败，返回 401 UNAUTHORIZED 状态码
                 log.error("sign verification failed", e);
                 return WxApiResponse.error(HttpStatus.UNAUTHORIZED.getReasonPhrase());
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -243,6 +244,8 @@ public class PayConttoller {
         }
         return WxApiResponse.ok();
     }
+
+
 
 
 }
