@@ -159,8 +159,8 @@ public class PayConttoller  {
         BufferedReader reader = null;
         try {
             log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Signature"));
-            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Timestamp"));
-            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Nonce"));
+            log.info("returnPlay Wechatpay-Timestamp -->{}", request.getHeader("Wechatpay-Timestamp"));
+            log.info("returnPlay Wechatpay-Nonce -->{}", request.getHeader("Wechatpay-Nonce"));
             StringBuffer stringBuffer = new StringBuffer();
             reader = request.getReader();
             String line = "";
