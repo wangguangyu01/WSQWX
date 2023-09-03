@@ -214,8 +214,7 @@ public class PayConttoller {
             api3KeyWrapper.eq(SystemConfig::getSysConfigKey, "weixinCertKeyApi3");
             SystemConfig api3Key = systemConfigService.getOne(api3KeyWrapper);
             log.info("获取的路径地址::" + context.getRealPath("/apiclient_key.pem"));
-
-            org.springframework.core.io.Resource resource = new ClassPathResource("mchidCert/" + "apiclient_key.pem");
+            org.springframework.core.io.Resource  resource = resourceLoader.getResource("classpath:mchidCert/apiclient_key.pem");
             PrivateKey privateKey = PemUtil.loadPrivateKey(resource.getInputStream());
             NotificationConfig config = new RSAAutoCertificateConfig.Builder()
                     .merchantId(merchanCofig.getSysConfigValue())
