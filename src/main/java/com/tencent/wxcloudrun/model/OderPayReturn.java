@@ -161,6 +161,9 @@ public class OderPayReturn {
     @TableField(value = "pay_return_phone")
     private String payReturnPhone;
 
+    @TableField(value = "activity_uuid")
+    private String activityUuid;
+
 
     /** 优惠退款信息 说明：优惠退款信息 */
     @TableField(exist = false)
@@ -194,6 +197,7 @@ public class OderPayReturn {
         this.payReturnNumber = wxActivityReturn.getWxNumber();
         this.payReturnUser = wxActivityReturn.getNickname();
         this.payReturnPhone = wxActivityReturn.getPhone();
+        this.activityUuid = wxActivityReturn.getActivityUuid();
 
     }
 }

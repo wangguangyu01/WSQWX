@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tencent.wxcloudrun.dao.OderPayReturnMapper">
   <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.OderPayReturn">
-    <!--@mbg.generated-->
+     <!--@mbg.generated-->
     <!--@Table oder_pay_return-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="refund_id" jdbcType="VARCHAR" property="refundId" />
@@ -10,7 +10,9 @@
     <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
     <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
     <result column="channel" jdbcType="VARCHAR" property="channel" />
-    <result column="pay_return_user" jdbcType="VARCHAR" property="payReturnUser"/>
+    <result column="pay_return_user" jdbcType="VARCHAR" property="payReturnUser" />
+    <result column="pay_return_number" jdbcType="VARCHAR" property="payReturnNumber" />
+    <result column="pay_return_phone" jdbcType="VARCHAR" property="payReturnPhone" />
     <result column="user_received_account" jdbcType="VARCHAR" property="userReceivedAccount" />
     <result column="success_time" jdbcType="TIMESTAMP" property="successTime" />
     <result column="return_create_time" jdbcType="TIMESTAMP" property="returnCreateTime" />
@@ -25,12 +27,14 @@
     <result column="amount_discount_refund" jdbcType="BIGINT" property="amountDiscountRefund" />
     <result column="amount_currency" jdbcType="VARCHAR" property="amountCurrency" />
     <result column="amount_refund_fee" jdbcType="BIGINT" property="amountRefundFee" />
+    <result column="activity_uuid" jdbcType="VARCHAR" property="activityUuid" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, refund_id, out_refund_no, transaction_id, out_trade_no, channel, pay_return_user, user_received_account,
-    success_time, return_create_time, `status`, funds_account, amount_total, amount_refund,
-    amount_payer_total, amount_payer_refund, amount_settlement_refund, amount_settlement_total,
-    amount_discount_refund, amount_currency, amount_refund_fee
+    id, refund_id, out_refund_no, transaction_id, out_trade_no, channel, pay_return_user,
+    pay_return_number, pay_return_phone, user_received_account, success_time, return_create_time,
+    `status`, funds_account, amount_total, amount_refund, amount_payer_total, amount_payer_refund,
+    amount_settlement_refund, amount_settlement_total, amount_discount_refund, amount_currency,
+    amount_refund_fee, activity_uuid
   </sql>
 </mapper>
