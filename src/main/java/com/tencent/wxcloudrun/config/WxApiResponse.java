@@ -5,12 +5,12 @@ import java.util.HashMap;
 public class WxApiResponse  {
 
     private String  code;
-    private String errorMsg;
+    private String message;
     private Object data;
 
-    private WxApiResponse(String code, String errorMsg, Object data) {
+    private WxApiResponse(String code, String message, Object data) {
         this.code = code;
-        this.errorMsg = errorMsg;
+        this.message = message;
         this.data = data;
     }
 
