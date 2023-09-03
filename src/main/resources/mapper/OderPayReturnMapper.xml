@@ -10,6 +10,7 @@
     <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
     <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
     <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="pay_return_user" jdbcType="VARCHAR" property="payReturnUser"/>
     <result column="user_received_account" jdbcType="VARCHAR" property="userReceivedAccount" />
     <result column="success_time" jdbcType="TIMESTAMP" property="successTime" />
     <result column="return_create_time" jdbcType="TIMESTAMP" property="returnCreateTime" />
@@ -27,9 +28,9 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, refund_id, out_refund_no, transaction_id, out_trade_no, channel, user_received_account, 
-    success_time, return_create_time, `status`, funds_account, amount_total, amount_refund, 
-    amount_payer_total, amount_payer_refund, amount_settlement_refund, amount_settlement_total, 
+    id, refund_id, out_refund_no, transaction_id, out_trade_no, channel, pay_return_user, user_received_account,
+    success_time, return_create_time, `status`, funds_account, amount_total, amount_refund,
+    amount_payer_total, amount_payer_refund, amount_settlement_refund, amount_settlement_total,
     amount_discount_refund, amount_currency, amount_refund_fee
   </sql>
 </mapper>

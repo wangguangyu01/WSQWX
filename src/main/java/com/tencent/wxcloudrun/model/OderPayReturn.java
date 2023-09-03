@@ -143,6 +143,24 @@ public class OderPayReturn {
     @TableField(value = "amount_refund_fee")
     private Long amountRefundFee;
 
+    /**
+     * 退款人
+     */
+    @TableField(value = "pay_return_user")
+    private String payReturnUser;
+
+    /**
+     * 退款人微信
+     */
+    @TableField(value = "pay_return_number")
+    private String payReturnNumber;
+
+    /**
+     * 退款人联系电话
+     */
+    @TableField(value = "pay_return_phone")
+    private String payReturnPhone;
+
 
     /** 优惠退款信息 说明：优惠退款信息 */
     @TableField(exist = false)
@@ -166,6 +184,16 @@ public class OderPayReturn {
         this.amountSettlementTotal = amount.getSettlementTotal();
         this.amountTotal = amount.getTotal();
         this.amountRefund = amount.getRefund();
+
+    }
+
+    public void parseReturnUser(WxActivity wxActivityReturn) {
+        if (ObjectUtils.isEmpty(wxActivityReturn)) {
+            return;
+        }
+        this.payReturnNumber = wxActivityReturn.getWxNumber();
+        this.payReturnUser = wxActivityReturn.getNickname();
+        this.payReturnPhone = wxActivityReturn.getPhone();
 
     }
 }

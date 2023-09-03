@@ -7,6 +7,7 @@ import com.tencent.wxcloudrun.model.OderPay;
 import com.tencent.wxcloudrun.model.WxActivity;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import com.wechat.pay.java.service.refund.model.RefundNotification;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -33,14 +34,26 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
         if (!ObjectUtils.isEmpty(transaction)) {
              return;
         }
-        // 删除报名活动
-        LambdaQueryWrapper<WxActivity> activityLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        activityLambdaQueryWrapper.eq(WxActivity::getTradeNo, transaction.getOutTradeNo());
-        wxActivityMapper.delete(activityLambdaQueryWrapper);
+
+
         // 删除支付记录
         LambdaQueryWrapper<OderPay> payWrapper = new LambdaQueryWrapper<>();
         payWrapper.eq(OderPay::getTransactionId, transaction.getTransactionId());
+        OderPay oderPay = oderPayMapper.selectOne(payWrapper);
+
+        // 删除报名活动
+        LambdaQueryWrapper<WxActivity> activityLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        activityLambdaQueryWrapper.eq(WxActivity::getTradeNo, transaction.getOutTradeNo());
+        activityLambdaQueryWrapper.eq(WxActivity::getOpenId, oderPay.getOpenId());
+        List<WxActivity> wxActivitys = wxActivityMapper.selectList(activityLambdaQueryWrapper);
+        WxActivity wxActivityReturn = null;
+        if (CollectionUtils.isNotEmpty(wxActivitys)) {
+            wxActivityReturn = wxActivitys.get(0);
+
+        }
+        wxActivityMapper.delete(activityLambdaQueryWrapper);
         oderPayMapper.delete(payWrapper);
+
         Date returnCreateTime = null;
         if (StringUtils.isNotBlank(transaction.getCreateTime())) {
             returnCreateTime = DateUtils.parseDateTime(transaction.getCreateTime(), DateUtils.DATE_TIME_PATTERN);
@@ -63,6 +76,7 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
                 .status(transaction.getRefundStatus().name())
                 .build();
         oderPayReturn.parseAmount(transaction.getAmount());
+        oderPayReturn.parseReturnUser(wxActivityReturn);
         this.baseMapper.insert(oderPayReturn);
     }
 }
