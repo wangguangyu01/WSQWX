@@ -234,6 +234,7 @@ public class PayConttoller {
                 RefundNotification transaction = parser.parse(requestParam, RefundNotification.class);
                 log.info("RefundNotification--- >{}", transaction);
                 Status status = transaction.getRefundStatus();
+                log.info("status.equals(Status.SUCCESS) --->{}", status.equals(Status.SUCCESS));
                 if (status.equals(Status.SUCCESS)) {
                     oderPayReturnService.saveOderPayReturn(transaction);
                 }
