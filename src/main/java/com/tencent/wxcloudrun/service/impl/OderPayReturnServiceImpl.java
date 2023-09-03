@@ -72,21 +72,28 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
         if (!ObjectUtils.isEmpty(transaction.getFundsAccount())) {
             fundsAccount = transaction.getFundsAccount().name();
         }
-        //保存退款记录
-        OderPayReturn oderPayReturn = OderPayReturn.builder()
-                .returnCreateTime(returnCreateTime)
-                .channel(channel)
-                .outRefundNo(transaction.getOutRefundNo())
-                .outTradeNo(transaction.getOutTradeNo())
-                .transactionId(transaction.getTransactionId())
-                .refundId(transaction.getRefundId())
-                .userReceivedAccount(transaction.getUserReceivedAccount())
-                .successTime(successTime)
-                .fundsAccount(fundsAccount)
-                .status(transaction.getRefundStatus().name())
-                .build();
-        oderPayReturn.parseAmount(transaction.getAmount());
-        oderPayReturn.parseReturnUser(wxActivityReturn);
-        this.baseMapper.insert(oderPayReturn);
+
+        LambdaQueryWrapper<OderPayReturn> oderPayReturnWrapper = new LambdaQueryWrapper<>();
+        oderPayReturnWrapper.eq(OderPayReturn::getRefundId, transaction.getRefundId());
+        int count   = this.baseMapper.selectCount(oderPayReturnWrapper);
+        if (count == 0) {
+            //保存退款记录
+            OderPayReturn oderPayReturn = OderPayReturn.builder()
+                    .returnCreateTime(returnCreateTime)
+                    .channel(channel)
+                    .outRefundNo(transaction.getOutRefundNo())
+                    .outTradeNo(transaction.getOutTradeNo())
+                    .transactionId(transaction.getTransactionId())
+                    .refundId(transaction.getRefundId())
+                    .userReceivedAccount(transaction.getUserReceivedAccount())
+                    .successTime(successTime)
+                    .fundsAccount(fundsAccount)
+                    .status(transaction.getRefundStatus().name())
+                    .build();
+            oderPayReturn.parseAmount(transaction.getAmount());
+            oderPayReturn.parseReturnUser(wxActivityReturn);
+            this.baseMapper.insert(oderPayReturn);
+        }
+
     }
 }
