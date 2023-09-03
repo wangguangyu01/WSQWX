@@ -216,8 +216,7 @@ public class PayConttoller {
             log.info("获取的路径地址::" + context.getRealPath("/apiclient_key.pem"));
 
             org.springframework.core.io.Resource resource = new ClassPathResource("mchidCert/" + "apiclient_key.pem");
-            File file = resource.getFile();
-            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(file));
+            PrivateKey privateKey = PemUtil.loadPrivateKey(resource.getInputStream());
             NotificationConfig config = new RSAAutoCertificateConfig.Builder()
                     .merchantId(merchanCofig.getSysConfigValue())
                     .privateKey(privateKey)
