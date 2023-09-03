@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -44,6 +46,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.sax.SAXResult;
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -85,6 +88,13 @@ public class PayConttoller {
 
     @Resource
     private SystemConfigService systemConfigService;
+
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Autowired
+    private ServletContext context;
 
 
     @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
@@ -209,9 +219,12 @@ public class PayConttoller {
             api3KeyWrapper.eq(SystemConfig::getSysConfigKey, "weixinCertKeyApi3");
             SystemConfig api3Key = systemConfigService.getOne(api3KeyWrapper);
 
+            File file = resourceLoader.getResource("classpath:mchidCert/apiclient_key.pem").getFile();
+            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(file));
+            log.info("获取的路径地址::" + context.getRealPath("/apiclient_key.pem"));
             NotificationConfig config = new RSAAutoCertificateConfig.Builder()
                     .merchantId(merchanCofig.getSysConfigValue())
-                    .privateKeyFromPath(request.getHeader("Wechatpay-Serial"))
+                    .privateKey(privateKey)
                     .merchantSerialNumber(DownLoadCertService.serialNo)
                     .apiV3Key(api3Key.getSysConfigValue())
                     .build();
