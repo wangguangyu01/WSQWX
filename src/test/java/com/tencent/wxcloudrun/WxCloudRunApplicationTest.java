@@ -51,6 +51,8 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -281,12 +283,17 @@ public class WxCloudRunApplicationTest {
 
 
     @Test
-    public void testqueryWeiXinParam() {
+    public void testqueryWeiXinParam() throws ParseException {
         Status status = Status.valueOf("SUCCESS");
         if (Status.SUCCESS.equals(status)) {
             System.out.println("4444");
         }
         System.out.println(status.name());
+        String df = "2023-09-03T18:27:29+08:00";
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = simpleDateFormat.parse(df);
+        System.out.println(date);
+        System.out.println(DateUtils.format(date, DateUtils.DATE_TIME_PATTERN));
     }
 
 

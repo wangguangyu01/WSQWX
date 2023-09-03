@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -58,11 +59,13 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
 
         Date returnCreateTime = null;
         if (StringUtils.isNotBlank(transaction.getCreateTime())) {
-            returnCreateTime = DateUtils.parseDateTime(transaction.getCreateTime(), DateUtils.DATE_TIME_PATTERN);
+            SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            returnCreateTime = simpleDateFormat.parse(transaction.getCreateTime());
         }
         Date successTime = null;
         if (StringUtils.isNotBlank(transaction.getSuccessTime())) {
-            successTime = DateUtils.parseDateTime(transaction.getSuccessTime(), DateUtils.DATE_TIME_PATTERN);
+            SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            successTime = simpleDateFormat.parse(transaction.getSuccessTime());
         }
         String channel = "";
         if (!ObjectUtils.isEmpty(transaction.getChannel())) {
