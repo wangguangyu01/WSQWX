@@ -44,7 +44,9 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
         // 删除报名活动
         LambdaQueryWrapper<WxActivity> activityLambdaQueryWrapper = new LambdaQueryWrapper<>();
         activityLambdaQueryWrapper.eq(WxActivity::getTradeNo, transaction.getOutTradeNo());
-        activityLambdaQueryWrapper.eq(WxActivity::getOpenId, oderPay.getOpenId());
+        if (!ObjectUtils.isEmpty(oderPay)) {
+            activityLambdaQueryWrapper.eq(WxActivity::getOpenId, oderPay.getOpenId());
+        }
         List<WxActivity> wxActivitys = wxActivityMapper.selectList(activityLambdaQueryWrapper);
         WxActivity wxActivityReturn = null;
         if (CollectionUtils.isNotEmpty(wxActivitys)) {
