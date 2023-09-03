@@ -5,41 +5,59 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.tencent.wxcloudrun.config.ApiResponse;
+import com.tencent.wxcloudrun.config.WxApiResponse;
 import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.IPUtil;
+import com.wechat.pay.contrib.apache.httpclient.WechatPayHttpClientBuilder;
+import com.wechat.pay.contrib.apache.httpclient.auth.CertificatesVerifier;
+import com.wechat.pay.contrib.apache.httpclient.util.CertSerializeUtil;
+import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
+import com.wechat.pay.java.core.exception.ValidationException;
+import com.wechat.pay.java.core.notification.NotificationConfig;
+import com.wechat.pay.java.core.notification.NotificationParser;
+import com.wechat.pay.java.service.partnerpayments.jsapi.model.Transaction;
+import com.wechat.pay.java.service.refund.model.RefundNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.sax.SAXResult;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.math.BigInteger;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
+import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 
 @RestController
 @Slf4j
-public class PayConttoller  {
+public class PayConttoller {
 
     @Autowired
     private PayService payService;
-
-
 
 
     @Autowired
@@ -65,7 +83,11 @@ public class PayConttoller  {
 
 
 
-    @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE,produces = MediaType.APPLICATION_XML_VALUE)
+    @Resource
+    private SystemConfigService systemConfigService;
+
+
+    @RequestMapping(value = "/notifyOrder", consumes = TEXT_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
     public String notifyOrder(@RequestBody XmlRequestDTO requestDTO) throws Exception {
         XmlResponseDTO response = new XmlResponseDTO("SUCCESS", "OK");
         try {
@@ -91,7 +113,7 @@ public class PayConttoller  {
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, wxPersonalBrowse.getBrowsingOpenid());
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowse.getLoginOpenId());
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "0");
-                        WxBrowsingUsers wxBrowsingUsers  = wxBrowsingUsersService.getOne(browsingUsersLambdaQueryWrapper);
+                        WxBrowsingUsers wxBrowsingUsers = wxBrowsingUsersService.getOne(browsingUsersLambdaQueryWrapper);
                         if (!ObjectUtils.isEmpty(wxBrowsingUsers)) {
                             wxBrowsingUsers.setBrowsingType("2");
                             wxBrowsingUsersService.updateById(wxBrowsingUsers);
@@ -128,13 +150,12 @@ public class PayConttoller  {
     }
 
 
-
     @PostMapping("/api/placeOrder")
-    public ApiResponse placeOrder(@RequestBody PayOrderDo payOrderDo)  {
+    public ApiResponse placeOrder(@RequestBody PayOrderDo payOrderDo) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Map<String, Object> map = null;
         try {
-            WxUser wxUser  = wxUserService.queryWxUserOne(payOrderDo.getOpenId());
+            WxUser wxUser = wxUserService.queryWxUserOne(payOrderDo.getOpenId());
             if (ObjectUtils.isEmpty(wxUser)) {
                 return ApiResponse.ok(map);
             }
@@ -144,7 +165,7 @@ public class PayConttoller  {
             }
             log.info("placeOrder payOrderDo ---> {}", payOrderDo);
             IPUtil ipUtil = new IPUtil();
-            String ip  = ipUtil.getIP(request);
+            String ip = ipUtil.getIP(request);
             map = payService.unifiedOrder(payOrderDo.getOpenId(), payOrderDo.getPayType(), ip, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,14 +174,16 @@ public class PayConttoller  {
     }
 
 
-
     @PostMapping("/api/returnPlay")
-    public ApiResponse returnPlay(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public WxApiResponse returnPlay(HttpServletRequest request, HttpServletResponse response) throws IOException {
         BufferedReader reader = null;
         try {
-            log.info("returnPlay Wechatpay-Signature -->{}", request.getHeader("Wechatpay-Signature"));
-            log.info("returnPlay Wechatpay-Timestamp -->{}", request.getHeader("Wechatpay-Timestamp"));
-            log.info("returnPlay Wechatpay-Nonce -->{}", request.getHeader("Wechatpay-Nonce"));
+            Enumeration<String> enumeration = request.getHeaderNames();
+            while (enumeration.hasMoreElements()) {
+                String name = enumeration.nextElement();
+                log.info("enumeration.nextElement headerName--->{}", name);
+                log.info("enumeration.nextElement headerName value--->{}", request.getHeader(name));
+            }
             StringBuffer stringBuffer = new StringBuffer();
             reader = request.getReader();
             String line = "";
@@ -168,7 +191,42 @@ public class PayConttoller  {
                 stringBuffer.append(line);
             }
             String data = stringBuffer.toString();
-            log.info("returnPlay data--->{}", data);
+            com.wechat.pay.java.core.notification.RequestParam requestParam = new com.wechat.pay.java.core.notification.RequestParam
+                    .Builder()
+                    .serialNumber(request.getHeader("Wechatpay-Serial"))
+                    .nonce(request.getHeader("Wechatpay-Nonce"))
+                    .signature(request.getHeader("Wechatpay-Signature"))
+                    .timestamp(request.getHeader("Wechatpay-Timestamp"))
+                    .body(data)
+                    .build();
+
+            LambdaQueryWrapper<SystemConfig> merchantIdWrapper = new LambdaQueryWrapper<>();
+            merchantIdWrapper.eq(SystemConfig::getSysConfigKey, "weixinMchid");
+            SystemConfig merchanCofig = systemConfigService.getOne(merchantIdWrapper);
+
+
+            LambdaQueryWrapper<SystemConfig> api3KeyWrapper = new LambdaQueryWrapper<>();
+            api3KeyWrapper.eq(SystemConfig::getSysConfigKey, "weixinCertKeyApi3");
+            SystemConfig api3Key = systemConfigService.getOne(api3KeyWrapper);
+
+            NotificationConfig config = new RSAAutoCertificateConfig.Builder()
+                    .merchantId(merchanCofig.getSysConfigValue())
+                    .privateKeyFromPath(request.getHeader("Wechatpay-Serial"))
+                    .merchantSerialNumber(DownLoadCertService.serialNo)
+                    .apiV3Key(api3Key.getSysConfigValue())
+                    .build();
+            // 初始化 NotificationParser
+            NotificationParser parser = new NotificationParser(config);
+
+            try {
+                // 以支付通知回调为例，验签、解密并转换成 Transaction
+                RefundNotification transaction = parser.parse(requestParam, RefundNotification.class);
+
+            } catch (ValidationException e) {
+                // 签名验证失败，返回 401 UNAUTHORIZED 状态码
+                log.error("sign verification failed", e);
+                return WxApiResponse.error(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -176,11 +234,8 @@ public class PayConttoller  {
                 reader.close();
             }
         }
-
-        return ApiResponse.ok();
+        return WxApiResponse.ok();
     }
-
-
 
 
 }

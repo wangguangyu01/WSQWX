@@ -25,6 +25,9 @@ import com.tencent.wxcloudrun.utils.UUIDGenerator;
 import com.tencent.wxcloudrun.utils.XmlToStringUtil;
 import com.tencent.wxcloudrun.vo.BrowsingUsersCountVo;
 import com.tencent.wxcloudrun.vo.WxUserBrowsingUsersVo;
+import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
+import com.wechat.pay.java.core.cipher.PrivacyDecryptor;
+import com.wechat.pay.java.core.cipher.RSAPrivacyDecryptor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -33,13 +36,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,6 +69,9 @@ public class WxCloudRunApplicationTest {
 
     @Autowired
     private PayService payService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
 
 
@@ -82,6 +95,10 @@ public class WxCloudRunApplicationTest {
 
     @Autowired
     private WxBrowsingUsersMapper wxBrowsingUsersMapper;
+
+
+    @Autowired
+    private DownLoadCertService downLoadCertService;
 
     @Test
     public void testCount() throws Exception {
@@ -268,4 +285,7 @@ public class WxCloudRunApplicationTest {
         System.out.println(weiXinParamDTO);
 
     }
+
+
+
 }
