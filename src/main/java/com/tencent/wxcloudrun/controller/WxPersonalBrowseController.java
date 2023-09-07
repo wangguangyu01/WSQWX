@@ -98,6 +98,7 @@ public class WxPersonalBrowseController {
         BrowsingUsersCountVo browsingUsersCountVo = new BrowsingUsersCountVo();
         LambdaQueryWrapper<WxBrowsingUsers> wxBrowsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wxBrowsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowseDTO.getLoginOpenId());
+        wxBrowsingUsersLambdaQueryWrapper.groupBy(WxBrowsingUsers::getBrowsingUsersOpenid);
         int total = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
         browsingUsersCountVo.setTotal(total);
         List<String> list = new ArrayList<>();

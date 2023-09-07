@@ -17,10 +17,9 @@
 
 
     <select id="queryBrowsingUsersPage" resultType="com.tencent.wxcloudrun.vo.WxUserBrowsingUsersVo">
-        select wxUser.*, browsingUsers.browsing_type
-        from wx_browsing_users browsingUsers
-        left join wx_user wxUser  on wxUser.openid = browsingUsers.browsing_users_openid
-        where browsingUsers.login_open_id = #{wxPersonalBrowseDTO.loginOpenId}
+        select distinct wxUser.*, browsingUsers.browsing_type
+        from wx_browsing_users browsingUsers, wx_user wxUser
+        where wxUser.openid = browsingUsers.browsing_users_openid and browsingUsers.login_open_id = #{wxPersonalBrowseDTO.loginOpenId}
         <if test="wxPersonalBrowseDTO.pay == '1'.toString()">
              and browsingUsers.browsing_type in ('1', '2')
         </if>
