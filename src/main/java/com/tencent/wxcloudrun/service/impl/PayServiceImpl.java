@@ -131,14 +131,14 @@ public class PayServiceImpl implements PayService {
             // 查询配置中的会员费用
             LambdaQueryWrapper<WxUser> wxUserLambdaQueryWrapper = new LambdaQueryWrapper();
             wxUserLambdaQueryWrapper.eq(WxUser::getOpenId, activityUuid);
-            WxUser wxUser = wxUserMapper.selectOne(wxUserLambdaQueryWrapper);
+            List<WxUser> wxUser = wxUserMapper.selectList(wxUserLambdaQueryWrapper);
             // 查询配置中的会员费用
             LambdaQueryWrapper<SysConfig> queryWrapper = new LambdaQueryWrapper();
             queryWrapper.eq(SysConfig::getParamKey, "browse_fee");
             SysConfig sysConfig = sysConfigMapper.selectOne(queryWrapper);
             priceStr = sysConfig.getParamValue();
             body = "大卫维尼-浏览资料";
-            attach = "浏览会员序号：" + wxUser.getSerialNumber() + "的资料";
+            attach = "浏览会员序号：" + wxUser.get(0).getSerialNumber() + "的资料";
         }
         UnifiedorderDto unifiedorderDto = UnifiedorderDto
                 .builder()

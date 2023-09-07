@@ -128,10 +128,12 @@ public class PayConttoller {
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, wxPersonalBrowse.getBrowsingOpenid());
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowse.getLoginOpenId());
                         browsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingType, "0");
-                        WxBrowsingUsers wxBrowsingUsers = wxBrowsingUsersService.getOne(browsingUsersLambdaQueryWrapper);
-                        if (!ObjectUtils.isEmpty(wxBrowsingUsers)) {
-                            wxBrowsingUsers.setBrowsingType("2");
-                            wxBrowsingUsersService.updateById(wxBrowsingUsers);
+                        List<WxBrowsingUsers> wxBrowsingUsers = wxBrowsingUsersService.list(browsingUsersLambdaQueryWrapper);
+                        if (CollectionUtils.isNotEmpty(wxBrowsingUsers)) {
+                            for (WxBrowsingUsers browsingUser: wxBrowsingUsers) {
+                                browsingUser.setBrowsingType("2");
+                                wxBrowsingUsersService.updateById(browsingUser);
+                            }
                         }
 
                     }

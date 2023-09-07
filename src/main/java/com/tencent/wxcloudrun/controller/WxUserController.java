@@ -163,34 +163,21 @@ public class WxUserController {
                     // 如果审核通过了，查询浏览的用户是否包含该浏览的用户
                     LambdaQueryWrapper<WxBrowsingUsers> usersLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     usersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, userOpenInfoDto.getLoginOpenId());
+                    usersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, userOpenInfoDto.getOpenid());
                     // 根据登录用户查询浏览的人数
                     List<WxBrowsingUsers> wxBrowsingUsers = wxBrowsingUsersService.list(usersLambdaQueryWrapper);
-                    int updateCount = 0;
                     if (CollectionUtils.isNotEmpty(wxBrowsingUsers)) {
                         for (int i = 0; i < wxBrowsingUsers.size(); i++) {
-                            if (!StringUtils.equals(wxBrowsingUsers.get(i).getBrowsingUsersOpenid(),
-                                    userOpenInfoDto.getOpenid())) {
-                                updateCount++;
-                                continue;
+                            if (StringUtils.equals(wxBrowsingUsers.get(i).getBrowsingType(), "2")
+                                    || StringUtils.equals(wxBrowsingUsers.get(i).getBrowsingType(), "1")) {
+                                wxUserOne.setShowWxNumber(true);
+                                wxUserOne.setShowbutton(false);
                             } else {
-                                usersLambdaQueryWrapper.eq(WxBrowsingUsers::getBrowsingUsersOpenid, userOpenInfoDto.getOpenid());
-                                WxBrowsingUsers wxBrowsingUsersOneObj = wxBrowsingUsersService.getOne(usersLambdaQueryWrapper);
-                                if (!ObjectUtils.isEmpty(wxBrowsingUsersOneObj)) {
-                                    if (StringUtils.equals(wxBrowsingUsersOneObj.getBrowsingType(), "2")
-                                            || StringUtils.equals(wxBrowsingUsersOneObj.getBrowsingType(), "1")) {
-                                        wxUserOne.setShowWxNumber(true);
-                                        wxUserOne.setShowbutton(false);
-                                    } else {
-                                        wxUserOne.setShowWxNumber(false);
-                                        wxUserOne.setShowbutton(true);
-                                    }
-                                    break;
-                                }
+                                wxUserOne.setShowWxNumber(false);
+                                wxUserOne.setShowbutton(true);
                             }
                         }
-                    }
-                    // 如果没有浏览记录才会添加新的记录
-                    if (updateCount == CollectionUtils.size(wxBrowsingUsers)) {
+                    } else {
                         WxBrowsingUsers wxBrowsingUsersSave = WxBrowsingUsers.builder()
                                 .browsingUsersOpenid(userOpenInfoDto.getOpenid())
                                 .browsingType("0")
@@ -199,6 +186,7 @@ public class WxUserController {
                                 .build();
                         wxBrowsingUsersService.save(wxBrowsingUsersSave);
                     }
+
                     wxUserOne.setLoginApprove(true);
                     if (StringUtils.equals(wxUser.getAuthentication(), "1")) {
                         wxUserOne.setLoginAuthentication(true);
