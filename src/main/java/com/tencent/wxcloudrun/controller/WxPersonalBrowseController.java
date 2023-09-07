@@ -97,16 +97,12 @@ public class WxPersonalBrowseController {
             return ApiResponse.error("缺少登录用户的openid");
         }
         BrowsingUsersCountVo browsingUsersCountVo = new BrowsingUsersCountVo();
-        QueryWrapper<WxBrowsingUsers> wxBrowsingUsersLambdaQueryWrapper = new QueryWrapper<>();
-        wxBrowsingUsersLambdaQueryWrapper.select("DISTINCT browsing_users_openid");
-        wxBrowsingUsersLambdaQueryWrapper.lambda().eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowseDTO.getLoginOpenId());
-        int total = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
+        WxPersonalBrowsePageDTO wxPersonalBrowsePageDTO = new WxPersonalBrowsePageDTO();
+        wxPersonalBrowsePageDTO.setLoginOpenId(wxPersonalBrowseDTO.getLoginOpenId());
+        int total = browsingUsersService.queryCount(wxPersonalBrowsePageDTO);
         browsingUsersCountVo.setTotal(total);
-        List<String> list = new ArrayList<>();
-        list.add("1");
-        list.add("2");
-        wxBrowsingUsersLambdaQueryWrapper.lambda().in(WxBrowsingUsers::getBrowsingType, list);
-        int payCount = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
+        wxPersonalBrowsePageDTO.setPay("1");
+        int payCount = browsingUsersService.queryCount(wxPersonalBrowsePageDTO);
         browsingUsersCountVo.setPayCount(payCount);
         return ApiResponse.ok(browsingUsersCountVo);
     }

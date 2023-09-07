@@ -20,4 +20,8 @@ public interface WxBrowsingUsersService extends IService<WxBrowsingUsers>{
      */
     IPage<WxUserBrowsingUsersVo> queryWxUserPage(WxPersonalBrowsePageDTO wxPersonalBrowseDTO) throws Exception;
 
+
+
+    int queryCount(WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
+
 }

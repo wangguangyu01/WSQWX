@@ -17,10 +17,13 @@ public interface WxBrowsingUsersMapper extends BaseMapper<WxBrowsingUsers> {
 
     /**
      * 查询
+     *
      * @param page
      * @param wxPersonalBrowseDTO
      * @return
      */
     IPage<WxUserBrowsingUsersVo> queryBrowsingUsersPage(@Param("page") Page page,
                                                         @Param("wxPersonalBrowseDTO") WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
+
+    int queryCount(@Param("wxPersonalBrowseDTO") WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
 }
