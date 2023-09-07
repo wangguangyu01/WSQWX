@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.WxActivityDTO;
@@ -96,15 +97,15 @@ public class WxPersonalBrowseController {
             return ApiResponse.error("缺少登录用户的openid");
         }
         BrowsingUsersCountVo browsingUsersCountVo = new BrowsingUsersCountVo();
-        LambdaQueryWrapper<WxBrowsingUsers> wxBrowsingUsersLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        wxBrowsingUsersLambdaQueryWrapper.eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowseDTO.getLoginOpenId());
-        wxBrowsingUsersLambdaQueryWrapper.groupBy(WxBrowsingUsers::getBrowsingUsersOpenid);
+        QueryWrapper<WxBrowsingUsers> wxBrowsingUsersLambdaQueryWrapper = new QueryWrapper<>();
+        wxBrowsingUsersLambdaQueryWrapper.select("DISTINCT browsing_users_openid");
+        wxBrowsingUsersLambdaQueryWrapper.lambda().eq(WxBrowsingUsers::getLoginOpenId, wxPersonalBrowseDTO.getLoginOpenId());
         int total = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
         browsingUsersCountVo.setTotal(total);
         List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
-        wxBrowsingUsersLambdaQueryWrapper.in(WxBrowsingUsers::getBrowsingType, list);
+        wxBrowsingUsersLambdaQueryWrapper.lambda().in(WxBrowsingUsers::getBrowsingType, list);
         int payCount = browsingUsersService.count(wxBrowsingUsersLambdaQueryWrapper);
         browsingUsersCountVo.setPayCount(payCount);
         return ApiResponse.ok(browsingUsersCountVo);
