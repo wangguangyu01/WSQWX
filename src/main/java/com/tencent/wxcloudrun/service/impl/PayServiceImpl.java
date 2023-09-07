@@ -209,9 +209,13 @@ public class PayServiceImpl implements PayService {
                 LambdaQueryWrapper<WxPersonalBrowse> browseLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 browseLambdaQueryWrapper.eq(WxPersonalBrowse::getLoginOpenId, openId);
                 browseLambdaQueryWrapper.eq(WxPersonalBrowse::getBrowsingOpenid, activityUuid);
-                WxPersonalBrowse wxPersonalBrowse = wxPersonalBrowseMapper.selectOne(browseLambdaQueryWrapper);
-                wxPersonalBrowse.setTradeNo(out_trade_no);
-                wxPersonalBrowseMapper.updateById(wxPersonalBrowse);
+                List<WxPersonalBrowse> wxPersonalBrowses = wxPersonalBrowseMapper.selectList(browseLambdaQueryWrapper);
+                if (CollectionUtils.isNotEmpty(wxPersonalBrowses)) {
+                    for (WxPersonalBrowse personalBrowse: wxPersonalBrowses) {
+                        personalBrowse.setTradeNo(out_trade_no);
+                        wxPersonalBrowseMapper.updateById(personalBrowse);
+                    }
+                }
             }
 
             treeMap.put("package", prepay_id);
