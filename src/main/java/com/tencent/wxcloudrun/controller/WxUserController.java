@@ -130,8 +130,7 @@ public class WxUserController {
 
             log.info("queryWxUserPage wxUserDto--->{}", JSON.toJSONString(userOpenInfoDto));
             if (ObjectUtils.isEmpty(userOpenInfoDto)
-                    || StringUtils.isBlank(userOpenInfoDto.getOpenid())
-                    || StringUtils.isBlank(userOpenInfoDto.getLoginOpenId())) {
+                    || StringUtils.isBlank(userOpenInfoDto.getOpenid())) {
                 return ApiResponse.error("缺少参数");
             }
             WxUser wxUserOne = null;
