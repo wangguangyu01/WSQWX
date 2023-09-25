@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.WxBannerMapper">
+  <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.WxBanner">
+    <!--@mbg.generated-->
+    <!--@Table wx_banner-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="banner_nanme" jdbcType="VARCHAR" property="bannerNanme" />
+    <result column="banner_type" jdbcType="VARCHAR" property="bannerType" />
+    <result column="banner_content_id" jdbcType="VARCHAR" property="bannerContentId" />
+    <result column="banner_oder" jdbcType="BIGINT" property="bannerOder" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user_id" jdbcType="INTEGER" property="createUserId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, banner_nanme, banner_type, banner_content_id, banner_oder, create_time, update_time, 
+    create_user_id
+  </sql>
+</mapper>
