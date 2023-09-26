@@ -72,6 +72,9 @@ public class WxMenu {
     private String wxImagUrl;
 
 
+    /**
+     * 是否显示：0：显示；1：不显示
+     */
     @TableField(value = "wx_menu_show")
     private String wxMenuShow;
 }
