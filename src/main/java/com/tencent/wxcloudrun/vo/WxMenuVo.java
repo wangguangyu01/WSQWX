@@ -40,4 +40,13 @@ public class WxMenuVo implements Serializable {
     @TableField(value = "wx_menu_type")
     private String wxMenuType;
 
+
+
+    @TableField(value = "wx_imag_url")
+    private String wxImagUrl;
+
+
+    @TableField(value = "wx_menu_show")
+    private String wxMenuShow;
+
 }

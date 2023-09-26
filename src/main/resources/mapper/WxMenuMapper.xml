@@ -6,16 +6,18 @@
     <!--@Table wx_menu-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="wx_menu_name" jdbcType="VARCHAR" property="wxMenuName" />
+    <result column="wx_imag_url" jdbcType="VARCHAR" property="wxImagUrl" />
     <result column="wx_menu_url" jdbcType="VARCHAR" property="wxMenuUrl" />
     <result column="wx_menu_order" jdbcType="BIGINT" property="wxMenuOrder" />
     <result column="wx_menu_type" jdbcType="VARCHAR" property="wxMenuType" />
+    <result column="wx_menu_show" jdbcType="VARCHAR" property="wxMenuShow" />
     <result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, wx_menu_name, wx_menu_url, wx_menu_order, wx_menu_type, create_user_id, create_time, 
+    id, wx_menu_name, wx_imag_url, wx_menu_url, wx_menu_order, wx_menu_type, wx_menu_show, create_user_id, create_time,
     update_time
   </sql>
 </mapper>

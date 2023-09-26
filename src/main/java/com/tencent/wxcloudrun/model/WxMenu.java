@@ -67,4 +67,11 @@ public class WxMenu {
      */
     @TableField(value = "update_time")
     private Date updateTime;
+
+    @TableField(value = "wx_imag_url")
+    private String wxImagUrl;
+
+
+    @TableField(value = "wx_menu_show")
+    private String wxMenuShow;
 }
