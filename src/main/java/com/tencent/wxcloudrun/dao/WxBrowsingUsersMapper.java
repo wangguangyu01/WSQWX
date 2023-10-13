@@ -26,4 +26,7 @@ public interface WxBrowsingUsersMapper extends BaseMapper<WxBrowsingUsers> {
                                                         @Param("wxPersonalBrowseDTO") WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
 
     int queryCount(@Param("wxPersonalBrowseDTO") WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
+
+    IPage<WxUserBrowsingUsersVo>  queryBebrowsedPage(@Param("page") Page page,
+                                                   @Param("wxPersonalBrowseDTO") WxPersonalBrowsePageDTO wxPersonalBrowseDTO);
 }

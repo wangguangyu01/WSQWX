@@ -155,4 +155,7 @@ public class BlogContent {
      */
     @TableField(value = "staleDated")
     private String staleDated;
+
+
+
 }

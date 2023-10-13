@@ -31,4 +31,11 @@ public class WxBrowsingUsersServiceImpl extends ServiceImpl<WxBrowsingUsersMappe
     public int queryCount(WxPersonalBrowsePageDTO wxPersonalBrowseDTO) {
         return wxBrowsingUsersMapper.queryCount(wxPersonalBrowseDTO);
     }
+
+    @Override
+    public IPage<WxUserBrowsingUsersVo> queryBebrowsedPage(WxPersonalBrowsePageDTO wxPersonalBrowseDTO) {
+        Page page = new Page(wxPersonalBrowseDTO.getCurrentPage(), wxPersonalBrowseDTO.getLimit());
+        IPage<WxUserBrowsingUsersVo> wxUserIPage = wxBrowsingUsersMapper.queryBebrowsedPage(page, wxPersonalBrowseDTO);
+        return wxUserIPage;
+    }
 }

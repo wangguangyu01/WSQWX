@@ -34,6 +34,6 @@
 
     <select id="queryBlogContentPage" resultMap="BaseResultMap">
        select <include refid="Base_Column_List"/> from blog_content
-       where categories = #{categories} order by gtm_modified desc
+       where status = '1' and categories = #{categories} order by gtm_modified desc
     </select>
 </mapper>

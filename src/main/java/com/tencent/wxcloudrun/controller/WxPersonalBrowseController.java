@@ -118,4 +118,21 @@ public class WxPersonalBrowseController {
         IPage<WxUserBrowsingUsersVo> wxUserIPage = browsingUsersService.queryWxUserPage(wxPersonalBrowseDTO);
         return ApiResponse.ok(wxUserIPage);
     }
+
+
+    /**
+     * 被浏览
+     * @param wxPersonalBrowseDTO
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(value = "/api/searchBebrowsedPage")
+    public ApiResponse searchBebrowsedPageList(@RequestBody WxPersonalBrowsePageDTO wxPersonalBrowseDTO) throws Exception {
+        if (StringUtils.isBlank(wxPersonalBrowseDTO.getBrowsingOpenid())) {
+            return ApiResponse.error("缺少被浏览用户的openid");
+        }
+        log.info("pay--->{}", wxPersonalBrowseDTO.getPay());
+        IPage<WxUserBrowsingUsersVo> wxUserIPage = browsingUsersService.queryBebrowsedPage(wxPersonalBrowseDTO);
+        return ApiResponse.ok(wxUserIPage);
+    }
 }
