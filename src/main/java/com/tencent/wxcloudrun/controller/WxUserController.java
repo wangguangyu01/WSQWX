@@ -24,10 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 微信用户接口
@@ -133,6 +130,7 @@ public class WxUserController {
                     || StringUtils.isBlank(userOpenInfoDto.getOpenid())) {
                 return ApiResponse.error("缺少参数");
             }
+
             WxUser wxUserOne = null;
             int openIdCount = 0;
             if (StringUtils.isNotBlank(userOpenInfoDto.getOpenid())) {
@@ -151,6 +149,22 @@ public class WxUserController {
             }
             if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
                 wxUserOne.setWeight("-");
+            }
+
+            Date birthdayDate = DateUtils.parseDate(wxUserOne.getBirthday(), DateUtils.DATE_PATTERN);
+            if (!ObjectUtils.isEmpty(birthdayDate)) {
+                // 当前日期
+                Calendar nowCalendar = Calendar.getInstance();
+                // 当前年
+                int yearNow = nowCalendar.get(Calendar.YEAR);
+
+                Calendar birthCalendar = Calendar.getInstance();
+                birthCalendar.setTime(birthdayDate);
+                if (nowCalendar.after(birthCalendar)) {
+                    int yearBirth = birthCalendar.get(Calendar.YEAR);
+                    int age = yearNow - yearBirth;
+                    wxUserOne.setAge(age);
+                }
             }
             // 查询登录用户
             WxUser wxUser = wxUserService.queryWxUserOne(userOpenInfoDto.getLoginOpenId());
@@ -236,6 +250,21 @@ public class WxUserController {
                 }
                 if (StringUtils.isNotBlank(wxUserOne.getPhone()) && StringUtils.isBlank(wxUserOne.getWeight())) {
                     wxUserOne.setWeight("-");
+                }
+            }
+            Date birthdayDate = DateUtils.parseDate(wxUserOne.getBirthday(), DateUtils.DATE_PATTERN);
+            if (!ObjectUtils.isEmpty(birthdayDate)) {
+                // 当前日期
+                Calendar nowCalendar = Calendar.getInstance();
+                // 当前年
+                int yearNow = nowCalendar.get(Calendar.YEAR);
+                Calendar birthCalendar = Calendar.getInstance();
+                birthCalendar.setTime(birthdayDate);
+                if (nowCalendar.after(birthCalendar)) {
+
+                    int yearBirth = birthCalendar.get(Calendar.YEAR);
+                    int age = yearNow - yearBirth;
+                    wxUserOne.setAge(age);
                 }
             }
 

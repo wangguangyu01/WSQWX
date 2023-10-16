@@ -249,4 +249,22 @@ public class WxUser implements Serializable {
     @TableField(exist = false)
     private boolean loginAuthentication;
 
+
+
+    /**
+     * 背景颜色
+     */
+    @TableField(exist = false)
+    private String bgColor;
+
+
+    /**
+     * 年龄
+     */
+    @TableField(exist = false)
+    private Integer age;
+
+
+
+
 }

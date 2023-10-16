@@ -17,6 +17,7 @@ import com.tencent.wxcloudrun.model.SysFile;
 import com.tencent.wxcloudrun.model.SystemConfig;
 import com.tencent.wxcloudrun.model.WxUser;
 import com.tencent.wxcloudrun.service.*;
+import com.tencent.wxcloudrun.utils.DateUtils;
 import com.tencent.wxcloudrun.utils.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -125,6 +123,10 @@ public class WxUserServiceImpl implements WxUserService {
 
     @Override
     public IPage<WxUser> queryWxUserPage(WxUserPageParamDto wxUserPageParamDto) throws Exception {
+        // 当前日期
+        Calendar nowCalendar = Calendar.getInstance();
+        // 当前年
+        int yearNow = nowCalendar.get(Calendar.YEAR);
         // 查询审核通过的
         wxUserPageParamDto.setApprove("0");
         Page page = new Page(wxUserPageParamDto.getCurrentPage(), wxUserPageParamDto.getLimit());
@@ -139,6 +141,23 @@ public class WxUserServiceImpl implements WxUserService {
                     imagePaths.add(sysFile);
                 }
                 wxUser.setImagePaths(imagePaths);
+                if (StringUtils.equals(wxUser.getSex(), "男")) {
+                    wxUser.setBgColor("#8cefe19e");
+                } else {
+                    wxUser.setBgColor("#ef8cc79e");
+                }
+                Date birthdayDate = DateUtils.parseDate(wxUser.getBirthday(), DateUtils.DATE_PATTERN);
+
+                if (!ObjectUtils.isEmpty(birthdayDate)) {
+                    Calendar birthCalendar = Calendar.getInstance();
+                    birthCalendar.setTime(birthdayDate);
+                    if (nowCalendar.after(birthCalendar)) {
+                        int yearBirth = birthCalendar.get(Calendar.YEAR);
+                        int age = yearNow - yearBirth;
+                        wxUser.setAge(age);
+                    }
+                }
+
             }
         }
         return wxUserIPage;
