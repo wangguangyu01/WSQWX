@@ -101,7 +101,8 @@ public class BlogContentController {
             boolean flag = false;
             if (StringUtils.isNotBlank(contentRequest.getOpenId())) {
                 WxUser wxUser = wxUserService.queryWxUserOne(contentRequest.getOpenId());
-                if (Objects.nonNull(wxUser) && StringUtils.equals(wxUser.getAuthentication(), "1")) {
+                if (Objects.nonNull(wxUser) && StringUtils.equals(wxUser.getAuthentication(), "1")
+                        && Objects.nonNull(blogContent.getProPay())) {
                     // 用于会员 金额的显示
                     BigDecimal proPaydecimal = NumberUtils.createBigDecimal(blogContent.getProPay() + "");
                     BigDecimal  proPayDecimal = proPaydecimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
