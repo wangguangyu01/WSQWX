@@ -148,6 +148,17 @@ public class BlogContent {
     private double  priceDouble;
 
 
+
+    @TableField(value = "pro_pay")
+    private Integer  proPay;
+
+
+
+
+    @TableField(exist = false)
+    private double  proPayDouble;
+
+
     /**
      * 是否有效
      * 0：有效
@@ -155,6 +166,9 @@ public class BlogContent {
      */
     @TableField(value = "staleDated")
     private String staleDated;
+
+
+
 
 
 

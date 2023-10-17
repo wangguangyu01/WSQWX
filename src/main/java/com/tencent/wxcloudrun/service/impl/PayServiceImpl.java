@@ -123,7 +123,19 @@ public class PayServiceImpl implements PayService {
         } else if (payType == 2) {
             BlogContent blogContent = blogContentMapper.selectById(activityUuid);
             if (Objects.nonNull(blogContent)) {
-                priceStr = String.valueOf(blogContent.getPrice());
+                boolean flag = false;
+                if (StringUtils.isNotBlank(openId)) {
+                    WxUser wxUser = wxUserMapper.selectById(openId);
+                    if (Objects.nonNull(wxUser) && StringUtils.equals(wxUser.getAuthentication(), "1")) {
+                        // 用于会员 金额的显示
+                        priceStr = String.valueOf(blogContent.getProPay());
+                        flag = true;
+                    }
+                }
+                if (!flag) {
+                    priceStr = String.valueOf(blogContent.getPrice());
+                }
+
                 body = "大卫维尼-活动报名费用";
                 attach = "参加活动名称: " + blogContent.getTitle();
             }
@@ -165,7 +177,6 @@ public class PayServiceImpl implements PayService {
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
         String xmlResponse = restTemplate.postForObject(unifiedOrderUrl, new HttpEntity<>(xml, httpHeaders), String.class);
         log.info("unifiedOrder xmlResponse --->{}", xmlResponse);
-        Date currenttime = new Date();
         Long timeStamp = System.currentTimeMillis() / 1000;
         Map<String, String> map = XmlToStringUtil.xmlToMap(xmlResponse);
         if (StringUtils.equals((String) map.get("return_code"), "SUCCESS")

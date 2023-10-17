@@ -8,10 +8,8 @@ import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.model.SysFile;
-import com.tencent.wxcloudrun.service.AttachmentService;
-import com.tencent.wxcloudrun.service.BlogContentService;
-import com.tencent.wxcloudrun.service.CounterService;
-import com.tencent.wxcloudrun.service.SysFileService;
+import com.tencent.wxcloudrun.model.WxUser;
+import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,14 +39,18 @@ public class BlogContentController {
 
     final AttachmentService attachmentService;
 
+    final WxUserService wxUserService;
+
 
 
     public BlogContentController(@Autowired BlogContentService blogContentService,
                                  @Autowired SysFileService sysFileService,
-                                 @Autowired AttachmentService attachmentService) {
+                                 @Autowired AttachmentService attachmentService,
+                                 @Autowired WxUserService wxUserService) {
         this.blogContentService = blogContentService;
         this.sysFileService = sysFileService;
         this.attachmentService = attachmentService;
+        this.wxUserService = wxUserService;
         this.logger = LoggerFactory.getLogger(CounterController.class);
     }
 
@@ -96,10 +98,24 @@ public class BlogContentController {
             blogContent.setMoneyQRCode("");
         }
         if (Objects.nonNull(blogContent) && Objects.nonNull(blogContent.getPrice())) {
-            // 用于金额的显示
-            BigDecimal decimal = NumberUtils.createBigDecimal(blogContent.getPrice() + "");
-            BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
-            blogContent.setPriceDouble(NumberUtils.toDouble(String.valueOf(bigDecimal), 0d));
+            boolean flag = false;
+            if (StringUtils.isNotBlank(contentRequest.getOpenId())) {
+                WxUser wxUser = wxUserService.queryWxUserOne(contentRequest.getOpenId());
+                if (Objects.nonNull(wxUser) && StringUtils.equals(wxUser.getAuthentication(), "1")) {
+                    // 用于会员 金额的显示
+                    BigDecimal proPaydecimal = NumberUtils.createBigDecimal(blogContent.getProPay() + "");
+                    BigDecimal  proPayDecimal = proPaydecimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
+                    blogContent.setPriceDouble(NumberUtils.toDouble(String.valueOf(proPayDecimal), 0d));
+                    flag = true;
+                }
+            }
+            if (!flag) {
+                // 用于金额的显示
+                BigDecimal decimal = NumberUtils.createBigDecimal(blogContent.getPrice() + "");
+                BigDecimal  bigDecimal = decimal.divide(new BigDecimal(100), 2, RoundingMode.HALF_UP );
+                blogContent.setPriceDouble(NumberUtils.toDouble(String.valueOf(bigDecimal), 0d));
+            }
+
         }
 
         return ApiResponse.ok(blogContent);
