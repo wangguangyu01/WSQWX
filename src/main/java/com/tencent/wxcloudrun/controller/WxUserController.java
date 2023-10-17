@@ -20,6 +20,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -323,5 +324,26 @@ public class WxUserController {
         return ApiResponse.error("数据获取失败");
     }
 
+
+    /**
+     * 查询六条男用户
+     * @return
+     */
+    @GetMapping(value = "/api/queryBoarduserWithMan")
+    public ApiResponse queryBoarduserWithMan() {
+       List<WxUser> wxUsers  = wxUserService.queryBoarduserWithMan();
+       return ApiResponse.ok(wxUsers);
+    }
+
+
+    /**
+     * 查询六条男用户
+     * @return
+     */
+    @GetMapping(value = "/api/queryBoarduserWithWoman")
+    public ApiResponse queryBoarduserWithWoman() {
+        List<WxUser> wxUsers  = wxUserService.queryBoarduserWithWoman();
+        return ApiResponse.ok(wxUsers);
+    }
 
 }

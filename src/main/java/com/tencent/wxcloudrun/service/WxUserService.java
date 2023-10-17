@@ -10,6 +10,7 @@ import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
 import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.WxUser;
 
+import java.util.List;
 import java.util.Map;
 
 public interface WxUserService {
@@ -66,6 +67,19 @@ public interface WxUserService {
      * @param wxUser
      */
     public WxUser  addOrUpdateWxUser(WxUserDto wxUserDto);
+
+
+    /**
+     * 查询6条男生，按照出生日期倒序
+     * @return
+     */
+    List<WxUser> queryBoarduserWithMan();
+
+    /**
+     * 查询6条女生，按照出生日期倒序
+     * @return
+     */
+    List<WxUser> queryBoarduserWithWoman();
 
 
 

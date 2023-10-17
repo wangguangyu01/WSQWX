@@ -88,4 +88,22 @@
     <update id="updateByPhone">
        update wx_user set openid = #{openId} where phone =#{phone}
     </update>
+
+
+    <select id="queryBoarduserWithMan" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from wx_user
+        where approve = '0' and sex = '男' and headimgurl is not null and headimgurl !='' order by update_time desc limit 6
+    </select>
+
+
+
+    <select id="queryBoarduserWithWoman" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from wx_user
+        where approve = '0' and sex = '女' and headimgurl is not null and headimgurl !='' order by update_time desc limit 6
+    </select>
+
 </mapper>

@@ -350,6 +350,52 @@ public class WxUserServiceImpl implements WxUserService {
         return wxUser;
     }
 
+    @Override
+    public List<WxUser> queryBoarduserWithMan() {
+        List<WxUser> menList = wxUserMapper.queryBoarduserWithMan();
+        // 当前日期
+        Calendar nowCalendar = Calendar.getInstance();
+        // 当前年
+        int yearNow = nowCalendar.get(Calendar.YEAR);
+        for (WxUser man: menList) {
+            man.setBgColor("#8cefe19e");
+            Date birthdayDate = DateUtils.parseDate(man.getBirthday(), DateUtils.DATE_PATTERN);
+            if (!ObjectUtils.isEmpty(birthdayDate)) {
+                Calendar birthCalendar = Calendar.getInstance();
+                birthCalendar.setTime(birthdayDate);
+                if (nowCalendar.after(birthCalendar)) {
+                    int yearBirth = birthCalendar.get(Calendar.YEAR);
+                    int age = yearNow - yearBirth;
+                    man.setAge(age);
+                }
+            }
+        }
+        return menList;
+    }
+
+    @Override
+    public List<WxUser> queryBoarduserWithWoman() {
+        List<WxUser> womenList = wxUserMapper.queryBoarduserWithWoman();
+        // 当前日期
+        Calendar nowCalendar = Calendar.getInstance();
+        // 当前年
+        int yearNow = nowCalendar.get(Calendar.YEAR);
+        for (WxUser woman: womenList) {
+            woman.setBgColor("#ef8cc79e");
+            Date birthdayDate = DateUtils.parseDate(woman.getBirthday(), DateUtils.DATE_PATTERN);
+            if (!ObjectUtils.isEmpty(birthdayDate)) {
+                Calendar birthCalendar = Calendar.getInstance();
+                birthCalendar.setTime(birthdayDate);
+                if (nowCalendar.after(birthCalendar)) {
+                    int yearBirth = birthCalendar.get(Calendar.YEAR);
+                    int age = yearNow - yearBirth;
+                    woman.setAge(age);
+                }
+            }
+        }
+        return womenList;
+    }
+
     private void updateHeadImagUrl(WxUser wxUser) {
         List<SysFile> files = fileService.queryFile(wxUser.getOpenId(), 11);
         if (CollectionUtils.isNotEmpty(files)) {

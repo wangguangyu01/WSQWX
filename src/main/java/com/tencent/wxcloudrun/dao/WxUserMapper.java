@@ -8,6 +8,8 @@ import com.tencent.wxcloudrun.model.BlogContent;
 import com.tencent.wxcloudrun.model.WxUser;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface WxUserMapper extends BaseMapper<WxUser> {
 
 
@@ -16,4 +18,17 @@ public interface WxUserMapper extends BaseMapper<WxUser> {
 
 
     int updateByPhone(@Param("openId") String openId, @Param("phone") String phone);
+
+
+    /**
+     * 查询6条男生，按照出生日期倒序
+     * @return
+     */
+    List<WxUser> queryBoarduserWithMan();
+
+    /**
+     * 查询6条女生，按照出生日期倒序
+     * @return
+     */
+    List<WxUser> queryBoarduserWithWoman();
 }
