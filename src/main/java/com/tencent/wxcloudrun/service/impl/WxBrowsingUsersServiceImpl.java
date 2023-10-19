@@ -51,6 +51,7 @@ public class WxBrowsingUsersServiceImpl extends ServiceImpl<WxBrowsingUsersMappe
                     int yearBirth = birthCalendar.get(Calendar.YEAR);
                     int age = yearNow - yearBirth;
                     wxUserBrowsingUsersVo.setAge(age);
+                    wxUserBrowsingUsersVo.setInfoUrl("/packageExtend/pages/base/article/article?openid="+wxUserBrowsingUsersVo.getOpenId());
                 }
             }
         }
@@ -85,6 +86,7 @@ public class WxBrowsingUsersServiceImpl extends ServiceImpl<WxBrowsingUsersMappe
                     int yearBirth = birthCalendar.get(Calendar.YEAR);
                     int age = yearNow - yearBirth;
                     wxUserBrowsingUsersVo.setAge(age);
+                    wxUserBrowsingUsersVo.setInfoUrl("/packageExtend/pages/base/article/article?openid="+wxUserBrowsingUsersVo.getOpenId());
                 }
             }
         }

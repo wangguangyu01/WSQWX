@@ -157,6 +157,7 @@ public class WxUserServiceImpl implements WxUserService {
                         wxUser.setAge(age);
                     }
                 }
+                wxUser.setInfoUrl("/packageExtend/pages/base/article/article?openid="+wxUser.getOpenId());
 
             }
         }
@@ -367,8 +368,10 @@ public class WxUserServiceImpl implements WxUserService {
                     int yearBirth = birthCalendar.get(Calendar.YEAR);
                     int age = yearNow - yearBirth;
                     man.setAge(age);
+
                 }
             }
+            man.setInfoUrl("/packageExtend/pages/base/article/article?openid="+man.getOpenId());
         }
         return menList;
     }
@@ -392,6 +395,7 @@ public class WxUserServiceImpl implements WxUserService {
                     woman.setAge(age);
                 }
             }
+            woman.setInfoUrl("/packageExtend/pages/base/article/article?openid="+woman.getOpenId());
         }
         return womenList;
     }

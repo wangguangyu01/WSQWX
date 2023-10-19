@@ -265,6 +265,13 @@ public class WxUser implements Serializable {
     private Integer age;
 
 
+    /**
+     * 人员详情的地址
+     */
+    @TableField(exist = false)
+    private String infoUrl;
+
+
 
 
 }
