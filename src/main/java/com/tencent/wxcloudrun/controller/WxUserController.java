@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tencent.wxcloudrun.config.ApiResponse;
-import com.tencent.wxcloudrun.dto.UserOpenInfoDto;
-import com.tencent.wxcloudrun.dto.WxUserCodeDto;
-import com.tencent.wxcloudrun.dto.WxUserDto;
-import com.tencent.wxcloudrun.dto.WxUserPageParamDto;
+import com.tencent.wxcloudrun.dto.*;
 import com.tencent.wxcloudrun.model.*;
 import com.tencent.wxcloudrun.service.*;
 import com.tencent.wxcloudrun.utils.DateUtils;
@@ -344,6 +341,27 @@ public class WxUserController {
     public ApiResponse queryBoarduserWithWoman() {
         List<WxUser> wxUsers  = wxUserService.queryBoarduserWithWoman();
         return ApiResponse.ok(wxUsers);
+    }
+
+
+    @PostMapping(value = "/api/checkOpneId")
+    public ApiResponse checkOpenId(@RequestBody OpenIdDTO openIdDTO) {
+        log.info("openIdDTO --->{}", openIdDTO);
+        WxUser wxUser  = null;
+        Map<String, Object> map = new HashMap<>();
+        try {
+            wxUser = wxUserService.queryWxUserOne(openIdDTO.getOpenId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!ObjectUtils.isEmpty(wxUser)) {
+            map.put("openid", openIdDTO.getOpenId());
+            map.put("flag", true);
+        } else {
+            map.put("openid", openIdDTO.getOpenId());
+            map.put("flag", false);
+        }
+        return ApiResponse.ok(map);
     }
 
 }
