@@ -347,6 +347,7 @@ public class WxUserController {
     @PostMapping(value = "/api/checkOpneId")
     public ApiResponse checkOpenId(@RequestBody OpenIdDTO openIdDTO) {
         log.info("openIdDTO --->{}", openIdDTO);
+
         WxUser wxUser  = null;
         Map<String, Object> map = new HashMap<>();
         try {
