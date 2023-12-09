@@ -94,7 +94,7 @@
         select
             <include refid="Base_Column_List"/>
         from wx_user
-        where approve = '0' and sex = '男' and headimgurl is not null and headimgurl !='' order by update_time desc limit 6
+        where approve = '0' and sex = '男' and headimgurl is not null and headimgurl !='' order by update_time desc limit 12
     </select>
 
 
@@ -103,7 +103,7 @@
         select
             <include refid="Base_Column_List"/>
         from wx_user
-        where approve = '0' and sex = '女' and headimgurl is not null and headimgurl !='' order by update_time desc limit 6
+        where approve = '0' and sex = '女' and headimgurl is not null and headimgurl !='' order by update_time desc limit 12
     </select>
 
 </mapper>
