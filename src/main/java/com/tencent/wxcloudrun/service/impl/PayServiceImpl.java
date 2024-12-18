@@ -214,6 +214,7 @@ public class PayServiceImpl implements PayService {
                 queryWrapper.eq(WxActivity::getActivityUuid, activityUuid);
                 WxActivity wxActivity = wxActivityMapper.selectOne(queryWrapper);
                 wxActivity.setTradeNo(out_trade_no);
+                wxActivity.setStatus("0");
                 wxActivityMapper.updateById(wxActivity);
             } else if (StringUtils.isNotBlank(activityUuid) && payType == 3) {
                 // 查询单独支付浏览费用的订单，如果不为空，同时支付失败的情况下删除记录

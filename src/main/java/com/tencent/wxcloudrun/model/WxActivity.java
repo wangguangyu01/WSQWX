@@ -85,4 +85,7 @@ public class WxActivity {
 
     @TableField(value = "address")
     private String address;
+
+    @TableField(value = "status")
+    private String status;
 }
