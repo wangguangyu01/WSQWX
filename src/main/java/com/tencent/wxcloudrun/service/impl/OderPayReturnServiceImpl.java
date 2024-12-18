@@ -52,9 +52,9 @@ public class OderPayReturnServiceImpl extends ServiceImpl<OderPayReturnMapper, O
         WxActivity wxActivityReturn = null;
         if (CollectionUtils.isNotEmpty(wxActivitys)) {
             wxActivityReturn = wxActivitys.get(0);
-
+            wxActivityReturn.setStatus("1");
+            wxActivityMapper.updateById(wxActivityReturn);
         }
-        wxActivityMapper.delete(activityLambdaQueryWrapper);
         oderPayMapper.delete(payWrapper);
 
         Date returnCreateTime = null;
