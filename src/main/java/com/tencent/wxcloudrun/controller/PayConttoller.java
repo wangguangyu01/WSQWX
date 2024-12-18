@@ -172,14 +172,14 @@ public class PayConttoller {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Map<String, Object> map = null;
         try {
-            WxUser wxUser = wxUserService.queryWxUserOne(payOrderDo.getOpenId());
-            if (ObjectUtils.isEmpty(wxUser)) {
-                return ApiResponse.ok(map);
-            }
-            if (!StringUtils.equals(wxUser.getApprove(), "0")) {
-                map.put("price", "0");
-                return ApiResponse.ok(map);
-            }
+//            WxUser wxUser = wxUserService.queryWxUserOne(payOrderDo.getOpenId());
+//            if (ObjectUtils.isEmpty(wxUser)) {
+//                return ApiResponse.ok(map);
+//            }
+//            if (!StringUtils.equals(wxUser.getApprove(), "0")) {
+//                map.put("price", "0");
+//                return ApiResponse.ok(map);
+//            }
             log.info("placeOrder payOrderDo ---> {}", payOrderDo);
             IPUtil ipUtil = new IPUtil();
             String ip = ipUtil.getIP(request);
